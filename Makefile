@@ -6,7 +6,7 @@ CXXFLAGS := -g -pipe -O2 -Wall \
 	-I. `sdl2-config --cflags` \
 	--std=c++11 -D_REENTRANT -DHAVE_OPENGL
 
-TEST_BIN := test
+TEST_BIN := fiendish
 TEST_LIBS := `sdl2-config --libs` -lpthread -lGL
 TEST_OBJ = \
 	main.o \
@@ -17,7 +17,8 @@ TEST_OBJ = \
 	playstate.o \
 	globals.o \
     dungeon.o \
-	shadow.o
+	shadow.o \
+	text.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)

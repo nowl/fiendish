@@ -3,6 +3,7 @@
 #include "globals.hpp"
 #include "rng.hpp"
 #include "keyboard.hpp"
+#include "text.hpp"
 
 class DungeonFOVResponse : public FOVResponse {
 public:
@@ -59,6 +60,10 @@ PlayState::PlayState() {
     auto randomPoint = dungeon->getRandomRoom().randomPointInRoom();
     p->x = randomPoint.x;
     p->y = randomPoint.y;
+
+    auto textCmd = parse_text_command("{[color GRAY3]} {[color_reset]} testing {[color_reset]} more here{[color BLACKish]}");
+    //auto textCmd = parse_text_command("a{[color GRAY3]} test");
+    print_text_command(textCmd);
 }
 
 static void player_move(Direction dir, Dungeon *dungeon) {
@@ -104,7 +109,7 @@ void PlayState::handle_events()
                 for(int y=0; y<CELLS_VERT; y++)
                     putchar(x, y, rng::i_max_inc(255),
                             Color(rng::f(), rng::f(), rng::f()),
-                            Color::BLACK);
+                            ColorByName["BLACK"]);
         }
 
         else if (key.scancode == SDL_SCANCODE_L)
@@ -131,7 +136,7 @@ void PlayState::update()
             for(int y=0; y<CELLS_VERT; y++)
                 putchar(x, y, rng::i_max_inc(255),
                         Color(rng::f(), rng::f(), rng::f()),
-                        Color::BLACK);
+                        ColorByName["BLACK"]);
         handle_key(SDL_SCANCODE_D);
     } else if (pressed(SDL_SCANCODE_L) > REPEAT_RATE_MS) {
         player_move(Direction::EAST, dungeon.get());
@@ -162,7 +167,7 @@ void PlayState::render() {
             if (shadowMap.find(p) == shadowMap.end() &&
                 exploredMap.find(p) == exploredMap.end())
             {
-                putchar(x, y, ' ', Color::BLACK, Color::BLACK);
+                putchar(x, y, ' ', ColorByName["BLACK"], ColorByName["BLACK"]);
                 continue;
             }
             
@@ -174,9 +179,9 @@ void PlayState::render() {
             /*
             putchar(x, y, rng::i_max_inc(255),
                     Color(rng::f(), rng::f(), rng::f()),
-                    Color::BLACK);
+                    ColorByName["BLACK"]);
             */
-            Color color = Color::GRAY1;
+            Color color = ColorByName["GRAY1"];
             auto cell = dView.getCell(x, y);
             if (cell) {
                 switch (cell->cellType) {
@@ -185,7 +190,7 @@ void PlayState::render() {
                         color = Color(0, 0, 1.0*intensity);
                     putchar(x, y, '#',
                             color,
-                            Color::BLACK);
+                            ColorByName["BLACK"]);
                     break;
                 case CellType::ROOM:
                 case CellType::HALL:
@@ -193,13 +198,13 @@ void PlayState::render() {
                         color = Color(.7*intensity, .7*intensity, .7*intensity);
                     putchar(x, y, '.',
                             color,
-                            Color::BLACK);
+                            ColorByName["BLACK"]);
                     break;
                 }
             } else {
                 putchar(x, y, '#',
                         Color(0, 0.6, 0),
-                        Color::BLACK);
+                        ColorByName["BLACK"]);
             }
         }
     }
@@ -208,6 +213,6 @@ void PlayState::render() {
 
     putchar(pos.x, pos.y, '@',
             Color(1, 1, 1),
-            Color::BLACK);
+            ColorByName["BLACK"]);
 
 }

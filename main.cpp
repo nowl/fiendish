@@ -13,15 +13,17 @@
 #define MAX_DRAW_SKIPS    5
 
 int main(int argc, char *argv[]) {
+    init_colors();
+    
     rng::seed_good();
 
     int frames = 0;
 
     for(int x=0; x<120; x++)
         for(int y=0; y<38; y++)
-            g->sdl().putChar(x, y, 255 - y - x, Color(x/240.0 + .5, 0, 0), Color::BLACK);
+            g->sdl().putChar(x, y, 255 - y - x, Color(x/240.0 + .5, 0, 0), ColorByName["BLACK"]);
     for(int x=0; x<120; x++)
-        g->sdl().putChar(x, 4, '@', Color::WHITE, Color::BLACK);
+        g->sdl().putChar(x, 4, '@', ColorByName["WHITE"], ColorByName["BLACK"]);
 
     g->timer().Reset();
 
