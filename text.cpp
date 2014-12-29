@@ -70,8 +70,12 @@ void print_text_command(const TextCommand& cmd)
     }
 }
 
-static Color draw_fg_color = Color(1, 1, 1);
-static Color draw_bg_color = Color(0, 0, 0);
+static Color draw_fg_color;
+static Color draw_bg_color;
+static bool delayed_break_draw;
+static char delayed_break_char;
+static int delayed_break_row;
+static int delayed_break_col;
 
 int
 draw_tcmd_fill(const TextCommand& tcmd,
@@ -80,6 +84,10 @@ draw_tcmd_fill(const TextCommand& tcmd,
                int max_col,
                int max_lines)
 {
+    draw_fg_color = Color(1, 1, 1);
+    draw_bg_color = Color(0, 0, 0);
+    delayed_break_draw = false;
+
     int draw_col = min_col;
     int draw_row = line_start;
     auto iter = tcmd.tokens.begin();
@@ -90,6 +98,7 @@ draw_tcmd_fill(const TextCommand& tcmd,
         {
             int cols_left = max_col - draw_col + 1;
             if (iter->toNextBreak > cols_left) {
+                delayed_break_draw = false;
                 draw_col = min_col;
                 draw_row++;
                 
@@ -97,11 +106,24 @@ draw_tcmd_fill(const TextCommand& tcmd,
                 if (draw_row - line_start + 1 > max_lines) {
                     return max_lines;
                 }
+            } else if (iter->toNextBreak == 0) {
+                delayed_break_char = tcmd.str[iter->start];
+                delayed_break_draw = true;
+                delayed_break_col = draw_col;
+                delayed_break_row = draw_row;
+            } else if (delayed_break_draw) {
+                delayed_break_draw = false;
+                putchar(delayed_break_col, delayed_break_row,
+                        delayed_break_char,
+                        draw_fg_color,
+                        draw_bg_color);
             }
-
-            putchar(draw_col, draw_row, tcmd.str[iter->start],
-                    draw_fg_color,
-                    draw_bg_color);
+            
+            if (!delayed_break_draw) {
+                putchar(draw_col, draw_row, tcmd.str[iter->start],
+                        draw_fg_color,
+                        draw_bg_color);
+            }
 
             draw_col++;
             

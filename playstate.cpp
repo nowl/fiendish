@@ -212,5 +212,5 @@ void PlayState::render() {
             ColorByName["BLACK"]);
 
     auto textCmd = parse_text_command("This is a {[colorhex ff0000]}test{[color_reset]}. \"{[color BLUE]}test{[color_reset]}\" should have been colored blue. This line will continue --- I want to get this to fill a few lines of text.");
-    int num_lines = draw_tcmd_fill(textCmd, 30, 2, 50, 10);
+    int num_lines = draw_tcmd_fill(textCmd, 30, 30, 50, 10);
 }
