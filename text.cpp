@@ -1,5 +1,6 @@
 #include "text.hpp"
 #include "color.hpp"
+#include "globals.hpp"
 
 static void
 fill_breaks(std::vector<TextToken>& tokens,
@@ -67,4 +68,72 @@ void print_text_command(const TextCommand& cmd)
                i, static_cast<int>(tkn.token), tkn.start, tkn.end, tkn.toNextBreak);
                
     }
+}
+
+static Color draw_fg_color = Color(1, 1, 1);
+static Color draw_bg_color = Color(0, 0, 0);
+
+int
+draw_tcmd_fill(const TextCommand& tcmd,
+               int line_start,
+               int min_col,
+               int max_col,
+               int max_lines)
+{
+    int draw_col = min_col;
+    int draw_row = line_start;
+    auto iter = tcmd.tokens.begin();
+    
+    for (; iter != tcmd.tokens.end(); iter++) {
+        switch (iter->token) {
+        case TextTokenType::CHAR:
+        {
+            int cols_left = max_col - draw_col + 1;
+            if (iter->toNextBreak > cols_left) {
+                draw_col = min_col;
+                draw_row++;
+                
+                // make sure we haven't exceeded max_lines
+                if (draw_row - line_start + 1 > max_lines) {
+                    return max_lines;
+                }
+            }
+
+            putchar(draw_col, draw_row, tcmd.str[iter->start],
+                    draw_fg_color,
+                    draw_bg_color);
+
+            draw_col++;
+            
+            break;
+        }
+        case TextTokenType::COMMAND:
+            if (tcmd.str.substr(iter->start+2, 11) == "color_reset")
+            {
+                draw_fg_color = Color(1, 1, 1);
+                draw_bg_color = Color(0, 0, 0);
+            }
+            else if (tcmd.str.substr(iter->start+2, 6) == "color ")
+            {
+                int start = iter->start+8;
+                int len = iter->end - (iter->start+8) - 2;
+                auto color_name = tcmd.str.substr(start, len);
+                assert(ColorByName.find(color_name) != ColorByName.end());
+                draw_fg_color = ColorByName[color_name];
+            }
+            else if (tcmd.str.substr(iter->start+2, 9) == "colorhex ")
+            {
+                int start = iter->start+2+9;
+                int len = 6;
+                const char *color_hex = tcmd.str.substr(start, len).c_str();
+                int r, g, b;
+                int vals_assigned = sscanf(color_hex, "%2x%2x%2x", &r, &g, &b);
+                assert(vals_assigned == 3);
+                draw_fg_color = Color(r/256.0f, g/256.0f, b/256.0f);
+            }
+            break;
+        }
+    }
+
+    return draw_row - line_start + 1;
 }

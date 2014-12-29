@@ -60,10 +60,6 @@ PlayState::PlayState() {
     auto randomPoint = dungeon->getRandomRoom().randomPointInRoom();
     p->x = randomPoint.x;
     p->y = randomPoint.y;
-
-    auto textCmd = parse_text_command("{[color GRAY3]} {[color_reset]} testing {[color_reset]} more here{[color BLACKish]}");
-    //auto textCmd = parse_text_command("a{[color GRAY3]} test");
-    print_text_command(textCmd);
 }
 
 static void player_move(Direction dir, Dungeon *dungeon) {
@@ -215,4 +211,6 @@ void PlayState::render() {
             Color(1, 1, 1),
             ColorByName["BLACK"]);
 
+    auto textCmd = parse_text_command("This is a {[colorhex ff0000]}test{[color_reset]}. \"{[color BLUE]}test{[color_reset]}\" should have been colored blue. This line will continue --- I want to get this to fill a few lines of text.");
+    int num_lines = draw_tcmd_fill(textCmd, 30, 2, 50, 10);
 }
