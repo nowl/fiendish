@@ -26,3 +26,12 @@ bool unhandled_key(key_event& key);
 // drawing functions
 
 void putchar(int x, int y, char c, Color fg, Color bg);
+
+extern const char *string_blocked;
+
+// positions
+
+#define MESSAGE_BOX_ROW_MIN 35
+#define MESSAGE_BOX_ROW_MAX 37
+#define MESSAGE_BOX_COL_MIN 1
+#define MESSAGE_BOX_COL_MAX 118

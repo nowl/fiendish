@@ -4,6 +4,7 @@
 #include "rng.hpp"
 #include "keyboard.hpp"
 #include "text.hpp"
+#include "messages.hpp"
 
 class DungeonFOVResponse : public FOVResponse {
 public:
@@ -86,9 +87,12 @@ static void player_move(Direction dir, Dungeon *dungeon) {
         p->x = desired_point.x;
         p->y = desired_point.y;
     } else if (cell) {
-        printf("blocked to the %s, can't enter %s\n",
-               DirectionInfo[static_cast<int>(dir)].desc,
-               CellTypeInfo[static_cast<int>(cell->cellType)].desc);
+        char *text;
+        asprintf(&text, string_blocked,
+                 DirectionInfo[static_cast<int>(dir)].desc,
+                 CellTypeInfo[static_cast<int>(cell->cellType)].desc);
+        add_message(parse_text_command(text));
+        free(text);
     }
 }
 
@@ -211,6 +215,5 @@ void PlayState::render() {
             Color(1, 1, 1),
             ColorByName["BLACK"]);
 
-    auto textCmd = parse_text_command("This is a {[colorhex ff0000]}test{[color_reset]}. \"{[color BLUE]}test{[color_reset]}\" should have been colored blue. This line will continue --- I want to get this to fill a few lines of text.");
-    int num_lines = draw_tcmd_fill(textCmd, 30, 30, 50, 10);
+    draw_messages();
 }

@@ -18,7 +18,8 @@ TEST_OBJ = \
 	globals.o \
     dungeon.o \
 	shadow.o \
-	text.o
+	text.o \
+	messages.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)

@@ -31,3 +31,8 @@ bool unhandled_key(key_event& key) {
 void putchar(int x, int y, char c, Color fg, Color bg) {
     g->sdl().putChar(x, y, c, fg, bg);
 }
+
+
+// displayed when player tries to enter a blocked tile
+const char *string_blocked =
+    "{[colorhex 0080f0]}blocked{[color_reset]} to the %s, can't enter {[colorhex 0080f0]}%s{[color_reset]}";

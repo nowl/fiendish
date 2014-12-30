@@ -82,7 +82,8 @@ draw_tcmd_fill(const TextCommand& tcmd,
                int line_start,
                int min_col,
                int max_col,
-               int max_lines)
+               int max_lines,
+               bool do_draw)
 {
     draw_fg_color = Color(1, 1, 1);
     draw_bg_color = Color(0, 0, 0);
@@ -113,17 +114,19 @@ draw_tcmd_fill(const TextCommand& tcmd,
                 delayed_break_row = draw_row;
             } else if (delayed_break_draw) {
                 delayed_break_draw = false;
-                putchar(delayed_break_col, delayed_break_row,
-                        delayed_break_char,
-                        draw_fg_color,
-                        draw_bg_color);
+                if (do_draw)
+                    putchar(delayed_break_col, delayed_break_row,
+                            delayed_break_char,
+                            draw_fg_color,
+                            draw_bg_color);
             }
             
-            if (!delayed_break_draw) {
-                putchar(draw_col, draw_row, tcmd.str[iter->start],
-                        draw_fg_color,
-                        draw_bg_color);
-            }
+            if (do_draw)
+                if (!delayed_break_draw) {
+                    putchar(draw_col, draw_row, tcmd.str[iter->start],
+                            draw_fg_color,
+                            draw_bg_color);
+                }
 
             draw_col++;
             

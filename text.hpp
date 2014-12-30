@@ -18,7 +18,7 @@ struct TextToken {
 };
 
 struct TextCommand {
-    const std::string str;
+    std::string str;
     std::vector<TextToken> tokens;
 };
 
@@ -33,4 +33,5 @@ int draw_tcmd_fill(const TextCommand& tcmd,
                    int line_start,
                    int min_col,
                    int max_col,
-                   int max_lines);
+                   int max_lines,
+                   bool do_draw = true);
