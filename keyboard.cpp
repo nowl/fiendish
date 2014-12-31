@@ -27,7 +27,6 @@ bool keyboard::next_unhandled_key(key_event &key) {
     if (unhandled_events.size() > 0) {
         key = key_events[unhandled_events.front()];
         unhandled_events.pop_front();
-        key.handled = true;
         return true;
     }
 
@@ -39,7 +38,6 @@ void keyboard::reset_key_states() {
         key_events[i].pressed = false;
         key_events[i].scancode = i;
         key_events[i].next_valid_hold_ms = -INITIAL_DELAY_MS;
-        key_events[i].handled = false;
     }
     unhandled_events.clear();
 }

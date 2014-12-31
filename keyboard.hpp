@@ -12,13 +12,12 @@
 struct key_event {
     // the tick this key was pressed
     int tick_pressed;
-    // if the key has been handled by a receiver yet
-    bool handled;
     // if the key is currently pressed
     bool pressed;
     // what key this actually is
     int scancode;
-    // next valid hold ms. when this goes positive, a hold is valid
+    // used to keep track of a held key, determines next valid time
+    // for a repeated event
     int next_valid_hold_ms;
 };
 

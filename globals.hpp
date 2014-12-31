@@ -16,7 +16,10 @@ const Point PlayerScreenPosition = Point{CELLS_HORIZ/2, CELLS_VERT/2};
 
 // keyboard handling functions
 
+// test if a key is held down (for use in update)
 bool key_held(int scancode);
+
+// test for an initial keypress (for use in handle_events)
 bool unhandled_key(key_event& key);
 
 // drawing functions
