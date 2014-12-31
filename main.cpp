@@ -26,8 +26,9 @@ int main(int argc, char *argv[]) {
         g->sdl().putChar(x, 4, '@', ColorByName["WHITE"], ColorByName["BLACK"]);
 
     g->timer().Reset();
-
-    auto state = std::unique_ptr<State>(new PlayState());
+    
+    auto play_state = std::unique_ptr<State>(new PlayState());
+    g->state = play_state.get();
 
     double next_update = g->sdl().getTicks() + MS_PER_TICK;
     g->set_running(true);
@@ -36,17 +37,17 @@ int main(int argc, char *argv[]) {
         frames++;
 
         g->kb().poll_events();
-        state->handle_events();
+        g->state->handle_events();
 
         int update_loops = 0;
         int cur_tick = g->sdl().getTicks();
         while (cur_tick >= next_update && update_loops < MAX_DRAW_SKIPS) {
-            state->update();
+            g->state->update();
             next_update += MS_PER_TICK;
             update_loops++;
         }
 
-        state->render();
+        g->state->render();
     }
     float elapsedTime = g->timer().Elapsed();
 

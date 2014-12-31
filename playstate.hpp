@@ -21,4 +21,7 @@ private:
     std::unique_ptr<FOVResponse> fovResponse;
     std::unordered_map<Point, float, PointHash> shadowMap;
     std::unordered_map<Point, bool, PointHash> exploredMap;
+    std::unique_ptr<State> message_state;
+
+    float intensity_mod;
 };

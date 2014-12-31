@@ -19,7 +19,8 @@ TEST_OBJ = \
     dungeon.o \
 	shadow.o \
 	text.o \
-	messages.o
+	messages.o \
+	message_state.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)

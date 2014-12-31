@@ -12,6 +12,9 @@ private:
     static uint32_t rand_cmwc();
     static void init_rand(uint32_t x);
 
+    static double other_norm;
+    static bool other_norm_available;
+
 public:
     static void seed_good();
     static int i();
@@ -19,4 +22,5 @@ public:
     static int i_min_max_inc(int min, int max);
     static float f();
     static double d();
+    static double normal();
 };

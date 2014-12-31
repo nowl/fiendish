@@ -1,5 +1,6 @@
 #include <cstdio>
 #include "playstate.hpp"
+#include "message_state.hpp"
 #include "globals.hpp"
 #include "rng.hpp"
 #include "keyboard.hpp"
@@ -61,6 +62,10 @@ PlayState::PlayState() {
     auto randomPoint = dungeon->getRandomRoom().randomPointInRoom();
     p->x = randomPoint.x;
     p->y = randomPoint.y;
+
+    message_state = std::unique_ptr<State>(new MessageState(this));
+    
+    intensity_mod = 0;
 }
 
 static void player_move(Direction dir, Dungeon *dungeon) {
@@ -121,6 +126,11 @@ void PlayState::handle_events()
             player_move(Direction::SOUTH, dungeon.get());
         else if (key.scancode == SDL_SCANCODE_K)
             player_move(Direction::NORTH, dungeon.get());
+        else if (key.scancode == SDL_SCANCODE_M)
+        {
+            g->state = message_state.get();
+            return;
+        }
     }
 
     Point pos = Point{p->x, p->y} - PlayerScreenPosition;
@@ -153,6 +163,8 @@ void PlayState::update()
 
     shadowMap.clear();
     ShadowFOV(p->x, p->y, 15, *fovResponse.get());
+
+    intensity_mod = rng::normal()*.03;
 }
 
 void PlayState::render() {
@@ -170,7 +182,7 @@ void PlayState::render() {
             float intensity = 0;
 
             if (shadowMap.find(p) != shadowMap.end())
-                intensity = shadowMap[p];
+                intensity = shadowMap[p] + intensity_mod;
 
             /*
             putchar(x, y, rng::i_max_inc(255),

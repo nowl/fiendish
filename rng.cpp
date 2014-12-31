@@ -2,13 +2,20 @@
  *    http://en.wikipedia.org/wiki/Multiply-with-carry
  */
 
+#include <cmath>
+
 #include "rng.hpp"
+
+#define PI 3.14159265
 
 #define PHI 0x9e3779b9
 
 uint32_t rng::c = 362436;
 uint32_t rng::Q[4096];
 uint32_t rng::it = 4095;
+
+double rng::other_norm;
+bool rng::other_norm_available = false;
  
 void rng::init_rand(uint32_t x)
 {
@@ -60,4 +67,21 @@ float rng::f() {
 
 double rng::d() {
     return static_cast<double>(rand_cmwc()) / UINT_MAX;
+}
+
+double rng::normal() {
+    if (other_norm_available) {
+        other_norm_available = false;
+        return other_norm;
+    }
+    
+    double u1 = d();
+    double u2 = d();
+    double R = std::sqrt(-2*std::log(u1));
+    double first_norm = R * cos(2*PI*u2);
+    
+    other_norm_available = true;
+    other_norm = R * sin(2*PI*u2);
+
+    return first_norm;
 }
