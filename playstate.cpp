@@ -88,9 +88,10 @@ static void player_move(Direction dir, Dungeon *dungeon) {
         p->y = desired_point.y;
     } else if (cell) {
         char *text;
-        asprintf(&text, string_blocked,
-                 DirectionInfo[static_cast<int>(dir)].desc,
-                 CellTypeInfo[static_cast<int>(cell->cellType)].desc);
+        int result = asprintf(&text, STRING_BLOCKED,
+                              DirectionInfo[static_cast<int>(dir)].desc,
+                              CellTypeInfo[static_cast<int>(cell->cellType)].desc);
+        assert(result != -1);
         add_message(parse_text_command(text));
         free(text);
     }
@@ -131,25 +132,20 @@ void PlayState::handle_events()
 
 void PlayState::update()
 {
-    if (pressed(SDL_SCANCODE_D) > REPEAT_RATE_MS) {
+    if (key_held(SDL_SCANCODE_D)) {
         for(int x=0; x<CELLS_HORIZ; x++)
             for(int y=0; y<CELLS_VERT; y++)
                 putchar(x, y, rng::i_max_inc(255),
                         Color(rng::f(), rng::f(), rng::f()),
                         ColorByName["BLACK"]);
-        handle_key(SDL_SCANCODE_D);
-    } else if (pressed(SDL_SCANCODE_L) > REPEAT_RATE_MS) {
+    } else if (key_held(SDL_SCANCODE_L)) {
         player_move(Direction::EAST, dungeon.get());
-        handle_key(SDL_SCANCODE_L);
-    } else if (pressed(SDL_SCANCODE_H) > REPEAT_RATE_MS) {
+    } else if (key_held(SDL_SCANCODE_H)) {
         player_move(Direction::WEST, dungeon.get());
-        handle_key(SDL_SCANCODE_H);
-    } else if (pressed(SDL_SCANCODE_J) > REPEAT_RATE_MS) {
+    } else if (key_held(SDL_SCANCODE_J)) {
         player_move(Direction::SOUTH, dungeon.get());
-        handle_key(SDL_SCANCODE_J);
-    } else if (pressed(SDL_SCANCODE_K) > REPEAT_RATE_MS) {
+    } else if (key_held(SDL_SCANCODE_K)) {
         player_move(Direction::NORTH, dungeon.get());
-        handle_key(SDL_SCANCODE_K);
     }
 
     Point pos = Point{p->x, p->y} - PlayerScreenPosition;

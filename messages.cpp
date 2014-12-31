@@ -46,7 +46,7 @@ void draw_messages()
     int start_row = MESSAGE_BOX_ROW_MIN;
     for(int i=count; i>0; i--)
     {
-        TextCommand& message = messages[messages.size()-count];
+        TextCommand& message = messages[messages.size()-i];
                 
         int num_rows = draw_tcmd_fill(message,
                                       start_row,

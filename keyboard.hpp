@@ -6,7 +6,8 @@
 
 #include "sdlman.hpp"
 
-#define REPEAT_RATE_MS     100
+#define INITIAL_DELAY_MS     250
+#define REPEAT_RATE_MS       60
 
 struct key_event {
     // the tick this key was pressed
@@ -17,6 +18,8 @@ struct key_event {
     bool pressed;
     // what key this actually is
     int scancode;
+    // next valid hold ms. when this goes positive, a hold is valid
+    int next_valid_hold_ms;
 };
 
 class keyboard {
@@ -27,25 +30,15 @@ public:
 
     // clears the keyboard state
     void reset_key_states();
-   
-    bool is_pressed(int scancode) {
-        return key_events[scancode].pressed;
-    }
 
-    int ms_pressed(int scancode) {
-        return sdl.getTicks() - key_events[scancode].tick_pressed;
-    }
+    // returns true if a key has been "held" and is valid for handling
+    bool held(int scancode);
 
     // returns the next unhandled key, sets the handled flag or
     // returns false if no more unhandled
     bool next_unhandled_key(key_event &key);
 
     void poll_events();
-
-    // "handles" an already pressed key by resetting it's time pressed
-    void handle(int scancode) {
-        key_events[scancode].tick_pressed = sdl.getTicks();
-    }
 
 private:
     key_event key_events[SDL_NUM_SCANCODES];

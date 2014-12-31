@@ -15,6 +15,7 @@ void keyboard::handle_incoming_event() {
         if (key_events[sc].pressed == false) {
             key_events[sc].pressed = true;
             key_events[sc].tick_pressed = sdl.getTicks();
+            key_events[sc].next_valid_hold_ms = -INITIAL_DELAY_MS;
             unhandled_events.push_back(sc);
         }
     }
@@ -37,6 +38,22 @@ void keyboard::reset_key_states() {
     for (int i=0; i<SDL_NUM_SCANCODES; i++) {
         key_events[i].pressed = false;
         key_events[i].scancode = i;
+        key_events[i].next_valid_hold_ms = -INITIAL_DELAY_MS;
+        key_events[i].handled = false;
     }
     unhandled_events.clear();
+}
+
+bool keyboard::held(int scancode) {
+    if (!key_events[scancode].pressed)
+        return false;
+    
+    // hold valid
+    int hold_valid = sdl.getTicks() - key_events[scancode].tick_pressed + key_events[scancode].next_valid_hold_ms;
+    if (hold_valid >= 0) {
+        key_events[scancode].next_valid_hold_ms -= REPEAT_RATE_MS;
+        return true;
+    }
+    
+    return false;
 }

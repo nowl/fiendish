@@ -13,15 +13,8 @@ struct DirectionInfo DirectionInfo[] = {
 std::unique_ptr<Game> g(new Game());
 std::unique_ptr<Player> p(new Player());
 
-int pressed(int scancode) {
-    if (g->kb().is_pressed(scancode))
-        return g->kb().ms_pressed(scancode);
-    else
-        return -1;
-}
-
-void handle_key(int scancode) {
-    g->kb().handle(scancode);
+bool key_held(int scancode) {
+    return g->kb().held(scancode);
 }
 
 bool unhandled_key(key_event& key) {
@@ -31,8 +24,3 @@ bool unhandled_key(key_event& key) {
 void putchar(int x, int y, char c, Color fg, Color bg) {
     g->sdl().putChar(x, y, c, fg, bg);
 }
-
-
-// displayed when player tries to enter a blocked tile
-const char *string_blocked =
-    "{[colorhex 0080f0]}blocked{[color_reset]} to the %s, can't enter {[colorhex 0080f0]}%s{[color_reset]}";

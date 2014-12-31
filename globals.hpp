@@ -16,18 +16,14 @@ const Point PlayerScreenPosition = Point{CELLS_HORIZ/2, CELLS_VERT/2};
 
 // keyboard handling functions
 
-// is key pressed? -1 if not, otherwise returns ms (ticks) it's been
-// pressed for.
-int pressed(int scancode);
-void handle_key(int scancode);
+bool key_held(int scancode);
 bool unhandled_key(key_event& key);
-
 
 // drawing functions
 
 void putchar(int x, int y, char c, Color fg, Color bg);
 
-extern const char *string_blocked;
+#define STRING_BLOCKED "{[colorhex c0c000]}blocked{[color_reset]} to the %s, can't enter {[colorhex 0080f0]}%s{[color_reset]}"
 
 // positions
 
