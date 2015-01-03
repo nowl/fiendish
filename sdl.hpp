@@ -26,10 +26,10 @@
 #define TEXTURE_WIDTH  304
 #define TEXTURE_HEIGHT 144
 
-class SDLMan {
+class SDL {
 public:
-	SDLMan();
-	virtual ~SDLMan();
+	SDL();
+	virtual ~SDL();
 
 	void draw();
     void putChar(int x, int y, char c, const Color& fg, const Color& bg);

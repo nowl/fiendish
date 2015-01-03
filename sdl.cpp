@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "sdlman.hpp"
+#include "sdl.hpp"
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -10,7 +10,7 @@
 #include "data.h"
 #include "codepage-437-hex.h"
 
-struct SDLMan::impl {
+struct SDL::impl {
 	SDL_Window* window;
 	SDL_GLContext context;
     GLuint vao, vbo[4];
@@ -30,7 +30,7 @@ static void sdldie(const char *msg)
     exit(1);
 }
 
-void SDLMan::setupwindow()
+void SDL::setupwindow()
 {
 	// init sdl
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -53,7 +53,7 @@ void SDLMan::setupwindow()
     SDL_GL_SetSwapInterval(0);
 }
 
-void SDLMan::setupGL()
+void SDL::setupGL()
 {
     int IsCompiled_VS, IsCompiled_FS;
     int IsLinked;
@@ -226,7 +226,7 @@ void SDLMan::setupGL()
     glEnable(GL_CULL_FACE);
 }
 
-void SDLMan::draw() {
+void SDL::draw() {
     if(p->dirty) {
         p->dirty = false;
         glBindBuffer(GL_ARRAY_BUFFER, p->vbo[1]);
@@ -250,7 +250,7 @@ void SDLMan::draw() {
     }
 }
 
-SDLMan::SDLMan()
+SDL::SDL()
     : p(new impl)
 {
     p->dirty = true;
@@ -259,7 +259,7 @@ SDLMan::SDLMan()
     setupGL();
 }
 
-SDLMan::~SDLMan() {
+SDL::~SDL() {
     glUseProgram(0);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -277,7 +277,7 @@ SDLMan::~SDLMan() {
 	SDL_Quit();
 }
 
-void SDLMan::putChar(int x, int y, char c, const Color& fg, const Color& bg)
+void SDL::putChar(int x, int y, char c, const Color& fg, const Color& bg)
 {
     int index = (CELLS_VERT-y-1) + x * CELLS_VERT;
     p->displayChar[index] = c;
@@ -291,14 +291,14 @@ void SDLMan::putChar(int x, int y, char c, const Color& fg, const Color& bg)
     p->dirty = true;
 }
 
-bool SDLMan::pollEvent() {
+bool SDL::pollEvent() {
     return SDL_PollEvent(&p->currentSDLEvent);
 }
 
-SDL_Event& SDLMan::getCurrentEvent() {
+SDL_Event& SDL::getCurrentEvent() {
     return p->currentSDLEvent;
 }
 
-int SDLMan::getTicks() {
+int SDL::getTicks() {
     return SDL_GetTicks();
 }

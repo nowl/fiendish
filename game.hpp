@@ -1,7 +1,7 @@
 #pragma once
 
 #include "timer.hpp"
-#include "sdlman.hpp"
+#include "sdl.hpp"
 #include "keyboard.hpp"
 #include "state.hpp"
 
@@ -9,7 +9,7 @@ class Game {
 public:
     Game() : state(NULL), running_(false), keyboard_(man_) {}
 
-    SDLMan& sdl() { return man_; }
+    SDL& sdl() { return man_; }
     keyboard& kb() { return keyboard_; }
     Timer& timer() { return timer_; }
     bool is_running() const { return running_; }
@@ -18,7 +18,7 @@ public:
     State* state;
 
 private:
-    SDLMan man_;
+    SDL man_;
     Timer timer_;
     bool running_;
     keyboard keyboard_;

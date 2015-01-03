@@ -10,7 +10,7 @@ TEST_BIN := fiendish
 TEST_LIBS := `sdl2-config --libs` -lpthread -lGL
 TEST_OBJ = \
 	main.o \
-	sdlman.o \
+	sdl.o \
 	colors.o \
 	rng.o \
 	keyboard.o \

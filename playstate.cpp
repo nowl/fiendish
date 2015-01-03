@@ -51,7 +51,9 @@ private:
 };
 
 PlayState::PlayState() {
-    dungeon = makeRecursiveSplitDungeon(300, 300, 500, 5, 15);
+    add_message("Welcome to {[colorhex c00000]}Fiendish{[colorhex 800000]}RL");
+
+    dungeon = makeRecursiveSplitDungeon(200, 200, 500, 5, 10);
 
     dView.setDungeon(dungeon.get());
     
@@ -223,5 +225,5 @@ void PlayState::render() {
             Color(1, 1, 1),
             ColorByName["BLACK"]);
 
-    draw_messages();
+    draw_messages(MESSAGE_BOX_ROW_MIN, MESSAGE_BOX_ROW_MAX, MESSAGE_BOX_COL_MIN, MESSAGE_BOX_COL_MAX);
 }

@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 
-#include "sdlman.hpp"
+#include "sdl.hpp"
 
 #define INITIAL_DELAY_MS     250
 #define REPEAT_RATE_MS       60
@@ -23,7 +23,7 @@ struct key_event {
 
 class keyboard {
 public:
-    keyboard(SDLMan& sdl) : sdl(sdl) {
+    keyboard(SDL& sdl) : sdl(sdl) {
         reset_key_states();
     }
 
@@ -41,7 +41,7 @@ public:
 
 private:
     key_event key_events[SDL_NUM_SCANCODES];
-    SDLMan &sdl;
+    SDL &sdl;
     std::deque<int> unhandled_events;
 
     void handle_incoming_event();

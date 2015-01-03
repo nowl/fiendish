@@ -1,5 +1,6 @@
 #include "message_state.hpp"
 #include "globals.hpp"
+#include "messages.hpp"
 
 void MessageState::handle_events()
 {
@@ -15,5 +16,9 @@ void MessageState::update() {
 }
 
 void MessageState::render() {
-    parentState->render();
+    for(int x=0; x<CELLS_HORIZ; x++)
+        for(int y=0; y<CELLS_VERT; y++)
+            putchar(x, y, ' ', ColorByName["BLACK"], ColorByName["BLACK"]);
+    
+    draw_messages(1, 36, 1, 118);
 }

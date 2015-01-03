@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <memory>
 
-#include "sdlman.hpp"
+#include "sdl.hpp"
 #include "timer.hpp"
 #include "rng.hpp"
 #include "keyboard.hpp"
