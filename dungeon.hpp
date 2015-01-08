@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "rng.hpp"
+#include "color.hpp"
 
 #define MAX_MAP_HEIGHT 100000
 
@@ -17,9 +18,14 @@ enum class CellType {
     ROOM
 };
 
-struct CellTypeInfo {
+struct CellTypeCatalog {
     bool enterable;
     const char *desc;
+    struct {
+        float h_min, h_max;
+        float s_min, s_max;
+        float v_min, v_max;
+    } color;
 };
 
 struct MapEntity;
@@ -59,6 +65,7 @@ public:
 
 struct MapCell {
     CellType cellType;
+    Color cellColorHSV;
     std::vector<MapEntity*> entities;
 
     MapCell();

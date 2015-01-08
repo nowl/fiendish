@@ -17,7 +17,14 @@ enum class SplitDirection {
     X, Y
 };
 
-MapCell::MapCell() : cellType(CellType::BEDROCK) {}
+MapCell::MapCell() : cellType(CellType::BEDROCK)
+{
+    struct CellTypeCatalog *info = &CellTypeCatalog[static_cast<int>(CellType::BEDROCK)];
+    cellColorHSV = Color{rng::f_min_max(info->color.h_min, info->color.h_max),
+                         rng::f_min_max(info->color.s_min, info->color.s_max),
+                         rng::f_min_max(info->color.v_min, info->color.v_max)};
+
+}
 
 Dungeon::Dungeon(int width, int height)
     : width(width), height(height)
@@ -158,8 +165,13 @@ Room&
 Dungeon::addRoom(int x, int y, int width, int height) {
     for(int yy = y; yy < y + height; yy++) {
         for(int xx = x; xx < x + width; xx++) {
+            CellType cellType = CellType::ROOM;
             MapCell *cell = getCell(xx, yy);
-            cell->cellType = CellType::ROOM;
+            struct CellTypeCatalog *info = &CellTypeCatalog[static_cast<int>(cellType)];
+            cell->cellType = cellType;
+            cell->cellColorHSV = {rng::f_min_max(info->color.h_min, info->color.h_max),
+                                  rng::f_min_max(info->color.s_min, info->color.s_max),
+                                  rng::f_min_max(info->color.v_min, info->color.v_max)};
         }
     }
 
@@ -173,19 +185,29 @@ void Dungeon::makeCorridor(Point p1, Direction dir, int length) {
            p1.x, p1.y, dir, length);
 #endif  // DEBUG_DUNGEON_CORR
 
+    struct CellTypeCatalog *info = &CellTypeCatalog[static_cast<int>(CellType::HALL)];
+    
     for (int i=0; i<length; i++) {
+        Color colorHSV{rng::f_min_max(info->color.h_min, info->color.h_max),
+                rng::f_min_max(info->color.s_min, info->color.s_max),
+                rng::f_min_max(info->color.v_min, info->color.v_max)};
+        
         switch(dir) {
         case Direction::NORTH:
             getCell(p1.x, p1.y - i)->cellType = CellType::HALL;
+            getCell(p1.x, p1.y - i)->cellColorHSV = colorHSV;
             break;
         case Direction::SOUTH:
             getCell(p1.x, p1.y + i)->cellType = CellType::HALL;
+            getCell(p1.x, p1.y + i)->cellColorHSV = colorHSV;
             break;
         case Direction::EAST:
             getCell(p1.x + i, p1.y)->cellType = CellType::HALL;
+            getCell(p1.x + i, p1.y)->cellColorHSV = colorHSV;
             break;
         case Direction::WEST:
             getCell(p1.x - i, p1.y)->cellType = CellType::HALL;
+            getCell(p1.x - i, p1.y)->cellColorHSV = colorHSV;
             break;
         }
     }

@@ -9,7 +9,7 @@
 extern std::unique_ptr<Game> g;
 extern std::unique_ptr<Player> p;
 
-extern CellTypeInfo CellTypeInfo[];
+extern CellTypeCatalog CellTypeCatalog[];
 extern DirectionInfo DirectionInfo[];
 
 const Point PlayerScreenPosition = Point{CELLS_HORIZ/2, CELLS_VERT/2};

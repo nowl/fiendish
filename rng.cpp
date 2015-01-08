@@ -65,6 +65,12 @@ float rng::f() {
     return static_cast<float>(rand_cmwc()) / UINT_MAX;
 }
 
+float rng::f_min_max(float min, float max) {
+    float range = max - min;
+    float val = f() * range;
+    return val + min;
+}
+
 double rng::d() {
     return static_cast<double>(rand_cmwc()) / UINT_MAX;
 }

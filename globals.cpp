@@ -1,9 +1,9 @@
 #include "globals.hpp"
 
-struct CellTypeInfo CellTypeInfo[] = {
-    {false, "BEDROCK"},
-    {true, "HALL"},
-    {true, "ROOM"},
+struct CellTypeCatalog CellTypeCatalog[] = {
+    {false, "BEDROCK", {240, 240, 0.5, 0.5, 1, 1}},
+    {true, "HALL", {0, 60, 0, 0.25, 0.5, 0.75}},
+    {true, "ROOM", {0, 60, 0, 0.25, 0.5, 0.75}},
 };
 
 struct DirectionInfo DirectionInfo[] = {

@@ -89,7 +89,7 @@ static void player_move(Direction dir, Dungeon *dungeon) {
 
     auto cell = dungeon->getCell(desired_point.x, desired_point.y);
     if (cell &&
-        CellTypeInfo[static_cast<int>(cell->cellType)].enterable)
+        CellTypeCatalog[static_cast<int>(cell->cellType)].enterable)
     {
         p->x = desired_point.x;
         p->y = desired_point.y;
@@ -97,7 +97,7 @@ static void player_move(Direction dir, Dungeon *dungeon) {
         char *text;
         int result = asprintf(&text, STRING_BLOCKED,
                               DirectionInfo[static_cast<int>(dir)].desc,
-                              CellTypeInfo[static_cast<int>(cell->cellType)].desc);
+                              CellTypeCatalog[static_cast<int>(cell->cellType)].desc);
         assert(result != -1);
         add_message(parse_text_command(text));
         free(text);
@@ -166,7 +166,7 @@ void PlayState::update()
     shadowMap.clear();
     ShadowFOV(p->x, p->y, 15, *fovResponse.get());
 
-    intensity_mod = rng::normal()*.03;
+    intensity_mod = rng::normal()*.1;
 }
 
 void PlayState::render() {
@@ -197,7 +197,9 @@ void PlayState::render() {
                 switch (cell->cellType) {
                 case CellType::BEDROCK:
                     if (intensity > 0)
-                        color = Color(0, 0, 1.0*intensity);
+                        color = Color::fromHSV(cell->cellColorHSV.r,
+                                               cell->cellColorHSV.g,
+                                               cell->cellColorHSV.b * intensity);
                     putchar(x, y, '#',
                             color,
                             ColorByName["BLACK"]);
@@ -205,7 +207,9 @@ void PlayState::render() {
                 case CellType::ROOM:
                 case CellType::HALL:
                     if (intensity > 0)
-                        color = Color(.7*intensity, .7*intensity, .7*intensity);
+                        color = Color::fromHSV(cell->cellColorHSV.r,
+                                               cell->cellColorHSV.g,
+                                               cell->cellColorHSV.b * intensity);
                     putchar(x, y, '.',
                             color,
                             ColorByName["BLACK"]);
@@ -222,7 +226,7 @@ void PlayState::render() {
     auto pos = dView.dungeonToScreen(p->x, p->y);
 
     putchar(pos.x, pos.y, '@',
-            Color(1, 1, 1),
+            Color::fromHSV(0, 0, .75),
             ColorByName["BLACK"]);
 
     draw_messages(MESSAGE_BOX_ROW_MIN, MESSAGE_BOX_ROW_MAX, MESSAGE_BOX_COL_MIN, MESSAGE_BOX_COL_MAX);
