@@ -162,3 +162,15 @@ draw_tcmd_fill(const TextCommand& tcmd,
 
     return draw_row - line_start + 1;
 }
+
+int draw_string_fill(const std::string& str,
+                     int line_start,
+                     int min_col,
+                     int max_col,
+                     int max_lines,
+                     bool do_draw)
+{
+    draw_tcmd_fill(parse_text_command(str),
+                   line_start, min_col, max_col,
+                   max_lines, do_draw);
+}

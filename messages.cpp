@@ -62,3 +62,36 @@ void draw_messages(int row_min, int row_max, int col_min, int col_max)
     }
 }
 
+void draw_border(const std::string& str) {
+    auto fg_color = Color::fromHSV(0, 0, .75);
+    auto bg_color = ColorByName["BLACK"];
+
+    for (int y=1; y<CELLS_VERT-1; y++) {
+        putchar(0, y, SYM_VERT_BAR,
+                fg_color, bg_color);
+        putchar(CELLS_HORIZ-1, y, SYM_VERT_BAR,
+                fg_color, bg_color);
+    }
+    
+    putchar(0, 0, SYM_UL_BAR, fg_color, bg_color);
+    putchar(0, CELLS_VERT-1, SYM_LL_BAR, fg_color, bg_color);
+    putchar(CELLS_HORIZ-1, 0, SYM_UR_BAR, fg_color, bg_color);
+    putchar(CELLS_HORIZ-1, CELLS_VERT-1, SYM_LR_BAR, fg_color, bg_color);
+
+    for (int x=1; x<CELLS_HORIZ-1; x++)
+        putchar(x, CELLS_VERT-1, SYM_HORZ_BAR,
+                fg_color, bg_color);
+
+    // find midpoint where to place overlay text
+    int str_len = str.size();
+    assert(str_len <= CELLS_HORIZ-6);
+    int fill_cells = (CELLS_HORIZ - 6 - str_len) / 2;
+
+    for (int x=1; x<fill_cells+1; x++)
+        putchar(x, 0, SYM_HORZ_BAR, fg_color, bg_color);
+    putchar(fill_cells+1, 0, SYM_HORZ_STOP_LEFT, fg_color, bg_color);
+    draw_string_fill(str, 0, 3+fill_cells, 1000, 1000);
+    putchar(fill_cells+1+str_len+3, 0, SYM_HORZ_STOP_RIGHT, fg_color, bg_color);
+    for (int x=fill_cells+1+str_len+3+1; x<CELLS_HORIZ-1; x++)
+        putchar(x, 0, SYM_HORZ_BAR, fg_color, bg_color);
+}

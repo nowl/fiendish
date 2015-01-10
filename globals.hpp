@@ -34,3 +34,14 @@ void putchar(int x, int y, char c, Color fg, Color bg);
 #define MESSAGE_BOX_ROW_MAX 37
 #define MESSAGE_BOX_COL_MIN 1
 #define MESSAGE_BOX_COL_MAX 118
+
+// symbols
+
+#define SYM_VERT_BAR 179
+#define SYM_HORZ_BAR 196
+#define SYM_LL_BAR 192
+#define SYM_UR_BAR 191
+#define SYM_UL_BAR 218
+#define SYM_LR_BAR 217
+#define SYM_HORZ_STOP_RIGHT 195
+#define SYM_HORZ_STOP_LEFT 180

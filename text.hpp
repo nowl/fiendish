@@ -35,3 +35,13 @@ int draw_tcmd_fill(const TextCommand& tcmd,
                    int max_col,
                    int max_lines,
                    bool do_draw = true);
+
+// convenience function to draw filled text if you don't want to save
+// the TextCommand
+// TODO: why not just make this the only interface and just cache the TextCommands?
+int draw_string_fill(const std::string& str,
+                     int line_start,
+                     int min_col,
+                     int max_col,
+                     int max_lines,
+                     bool do_draw = true);

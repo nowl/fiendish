@@ -20,5 +20,7 @@ void MessageState::render() {
         for(int y=0; y<CELLS_VERT; y++)
             putchar(x, y, ' ', ColorByName["BLACK"], ColorByName["BLACK"]);
     
+    draw_border("Messages - Scroll (PgUp/PgDn/space) - Quit (q)");;
+
     draw_messages(1, 36, 1, 118);
 }
