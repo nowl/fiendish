@@ -28,8 +28,6 @@ struct CellTypeCatalog {
     } color;
 };
 
-struct MapEntity;
-
 struct Point {
     int x, y;
 
@@ -66,7 +64,6 @@ public:
 struct MapCell {
     CellType cellType;
     Color cellColorHSV;
-    std::vector<MapEntity*> entities;
 
     MapCell();
 };
@@ -81,6 +78,8 @@ struct DirectionInfo {
 
 class Dungeon {
 public:
+    int width, height;
+
     Dungeon(int width, int height);
 
     Room &getRandomRoom();
@@ -102,7 +101,6 @@ public:
 private:
     std::vector<Room> rooms;
     std::vector<MapCell> cells;
-    int width, height;
 
     void makeCorridor(Point p1, Direction dir, int length);
 };

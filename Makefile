@@ -20,7 +20,8 @@ TEST_OBJ = \
 	shadow.o \
 	text.o \
 	messages.o \
-	message_state.o
+	message_state.o \
+	monsters.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)

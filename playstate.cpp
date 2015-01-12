@@ -54,6 +54,8 @@ PlayState::PlayState() {
     add_message("Welcome to {[colorhex c00000]}Fiendish{[colorhex 800000]}RL");
 
     dungeon = makeRecursiveSplitDungeon(200, 200, 500, 5, 10);
+    populateMonsters(dungeon.get(), monsters);
+    printf("num monsters in dungeon = %lu\n", monsters.size());
 
     dView.setDungeon(dungeon.get());
     
@@ -66,8 +68,6 @@ PlayState::PlayState() {
     p->y = randomPoint.y;
 
     message_state = std::unique_ptr<State>(new MessageState(this));
-    
-    intensity_mod = 0;
 }
 
 static void player_move(Direction dir, Dungeon *dungeon) {
@@ -165,8 +165,6 @@ void PlayState::update()
 
     shadowMap.clear();
     ShadowFOV(p->x, p->y, 15, *fovResponse.get());
-
-    intensity_mod = rng::normal()*.1;
 }
 
 void PlayState::render() {
@@ -184,7 +182,8 @@ void PlayState::render() {
             float intensity = 0;
 
             if (shadowMap.find(p) != shadowMap.end())
-                intensity = shadowMap[p] + intensity_mod;
+                intensity = shadowMap[p];
+                //intensity = shadowMap[p] + intensity_mod;
 
             /*
             putchar(x, y, rng::i_max_inc(255),
@@ -228,6 +227,20 @@ void PlayState::render() {
     putchar(pos.x, pos.y, '@',
             Color::fromHSV(0, 0, .75),
             ColorByName["BLACK"]);
+
+    // TODO: build a nearby monsters list
+    for (int i=0; i<monsters.size(); i++) {
+        Monster& monster = monsters[i];
+        auto iter = shadowMap.cbegin();
+        for (; iter != shadowMap.cend(); ++iter) {
+            if (iter->first == Point{monster.x, monster.y}) {
+                Point pos = dView.dungeonToScreen(monster.x, monster.y);
+                putchar(pos.x, pos.y, 'r',
+                        Color::fromHSV(120, 0.5, 0.75),
+                        ColorByName["BLACK"]);
+            }
+        }
+    }
 
     draw_messages(MESSAGE_BOX_ROW_MIN, MESSAGE_BOX_ROW_MAX, MESSAGE_BOX_COL_MIN, MESSAGE_BOX_COL_MAX);
 }

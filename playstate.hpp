@@ -6,6 +6,7 @@
 
 #include "dungeon.hpp"
 #include "shadow.hpp"
+#include "monsters.hpp"
 
 class PlayState : public State {
 public:
@@ -22,6 +23,5 @@ private:
     std::unordered_map<Point, float, PointHash> shadowMap;
     std::unordered_map<Point, bool, PointHash> exploredMap;
     std::unique_ptr<State> message_state;
-
-    float intensity_mod;
+    std::vector<Monster> monsters;
 };
