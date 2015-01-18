@@ -14,27 +14,12 @@
 ;;(defparameter *screen-bg* (make-array '(120 38) :element-type 'fixnum))
 (defparameter *screen-fg* (make-array '(120 38) :element-type 'fixnum))
 
-(defun putchar (char-or-code x y)
-  (setf (aref *screen-fg* x y)
-        (etypecase char-or-code
-          (fixnum char-or-code)
-          (character (char-code char-or-code)))))
-
-(putchar #\W 0 0)
-(putchar #\e 1 0)
-(putchar #\l 2 0)
-(putchar #\c 3 0)
-(putchar #\o 4 0)
-(putchar #\m 5 0)
-(putchar #\e 6 0)
-(putchar #\space 7 0)
-(putchar #\t 8 0)
-(putchar #\o 9 0)
-(loop for x from 10 below 120 do
-     (putchar 219 x 0))
 (loop for x from 0 below 120 do
      (loop for y from 1 below 38 do
-          (putchar (mod (+ (* x 38) y) 256) x y)))
+          (putchar 219 x y)))
+   ;;(putchar (mod (+ (* x 38) y) 256) x y)))
+       
+(draw-text "This is a bit of a longer test. We'll see if we can get a few lines of text this way." 1 10 50)
 
 (defun tex-coords-for-code (char-code)
   (declare ((unsigned-byte 8) char-code)

@@ -74,8 +74,8 @@
            ((and count
                  (eq :char (text-command-type cmd))
                  (whitespacep (text-command-data cmd)))
-            (setf count 0
-                  (text-command-chars-to-break cmd) 0))
+            (setf (text-command-chars-to-break cmd) count
+                  count 0))
            ;; it's not whitespace
            ((and count
                  (eq :char (text-command-type cmd)))
