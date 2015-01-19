@@ -1,7 +1,10 @@
 (in-package :fiendish-rl)
 
-(defparameter *width* 1920)
-(defparameter *height* (floor (/ (* *width* 9) 16)))
+;;(defparameter *width* 1920)
+;;(defparameter *height* (floor (/ (* *width* 9) 16)))
+
+(defparameter *height* 720)
+(defparameter *width* (floor (/ (* *height* 16) 9)))
 
 (defparameter *src-rect* (sdl2:make-rect 0 0 9 16))
 (defparameter *dst-rect* (sdl2:make-rect 0 0 9 16))
@@ -11,12 +14,15 @@
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
+;;(defparameter *sdl-flags* '(:shown :resizable :maximized :borderless))
+(defparameter *sdl-flags* '(:shown :resizable))
+
 (loop for x from 0 below 120 do
-     (loop for y from 1 below 38 do
+     (loop for y from 0 below 38 do
           (putchar 219 x y 1.0 0.0 0.0)))
    ;;(putchar (mod (+ (* x 38) y) 256) x y)))
        
-(draw-text "This is a bit of a longer test. We'll see if we can get a few lines of text this way." 1 10 50)
+(draw-text "This is a bit of a {(chsv 240.0 .74 .8)}longer{(creset)} test. We'll see if we can get a few lines of text this way." 1 10 50)
 
 (defun tex-coords-for-code (char-code)
   (declare ((unsigned-byte 8) char-code)
@@ -52,7 +58,7 @@
   (sdl2:with-init (:video)
     (setf *draw-count* 0
           *startup-time-ms* (sdl2:get-ticks))
-    (let ((win (sdl2:create-window :title "FiendishRL" :flags '(:shown :resizable :maximized :borderless))))
+    (let ((win (sdl2:create-window :title "FiendishRL" :flags *sdl-flags* :w *width* :h *height*)))
       
       
       (setf *renderer* (sdl2:create-renderer win -1 '(:accelerated :presentvsync))

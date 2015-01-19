@@ -8,8 +8,10 @@
 
 (require 'asdf)
 ;;(push #p"/home/nowl/dev/fiendish/" asdf:*central-registry*)
-(push #p"./" asdf:*central-registry*)
-(asdf:oos 'asdf:load-op 'fiendish-rl)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (push #p"./" asdf:*central-registry*)
+  (require :fiendish-rl))
+  ;;(asdf:oos 'asdf:load-op 'fiendish-rl))
 
 (time (fiendish-rl::run))
 (quit)

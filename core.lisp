@@ -24,7 +24,7 @@
 ;;;; text processing
 
 (defstruct text-command
-  ;; either :char, :color, :color-reset
+  ;; either :char, :color, :creset
   type
   ;; if type is :char, the character
   ;; if type is :color, the color as a set of values
@@ -49,8 +49,8 @@
     ((string= (subseq command-str 0 4) "chsv")
      (multiple-value-bind (h s v) (read-three-values (subseq command-str 4))
        (make-text-command :type :color :data (multiple-value-list (color-from-hsv h s v)))))
-    ((string= (subseq command-str 0 11) "color-reset")
-     (make-text-command :type :color-reset))    
+    ((string= (subseq command-str 0 6) "creset")
+     (make-text-command :type :creset))    
     (t (error "can't parse text command."))))
    
 (defun whitespacep (char)

@@ -1,5 +1,7 @@
 (in-package :fiendish-rl)
 
+(defparameter *draw-color-fg-stack* nil)
+
 (defparameter *draw-color-fg* (make-color :r 1.0 :g 1.0 :b 1.0))
 (defparameter *draw-color-bg* (make-color :r 0.0 :g 0.0 :b 0.0))
 
@@ -55,6 +57,7 @@ number of rows the text took up."
                            (color-g *draw-color-fg*)
                            (color-b *draw-color-fg*))
                   (incf col)))))
-           (:chsv )
-           (:color-reset)))))
+           (:color (push *draw-color-fg* *draw-color-fg-stack*)
+                   (setf *draw-color-fg* (car (text-command-data cmd))))
+           (:creset (setf *draw-color-fg* (pop *draw-color-fg-stack*)))))))
   ;; TODO return number of rows drawn (1+ (- row start-row))))
