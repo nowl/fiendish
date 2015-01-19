@@ -1,5 +1,10 @@
 (in-package :fiendish-rl)
 
+(defstruct color
+  (r 0.0 :type float)
+  (g 0.0 :type float)
+  (b 0.0 :type float))
+
 (defun color-from-hsv (h s v)
   (declare (optimize (safety 0) (speed 3) (debug 0))
            (single-float s v)
@@ -9,12 +14,12 @@
          (x (* c (- 1 (abs (- (mod (/ h 60) 2) 1)))))
          (m (- v c)))
     (case (floor (/ h 60))
-      (0 (values (+ c m) (+ x m) m))
-      (1 (values (+ x m) (+ c m) m))
-      (2 (values m (+ c m) (+ x m)))
-      (3 (values m (+ x m) (+ c m)))
-      (4 (values (+ x m) m (+ c m)))
-      (5 (values (+ c m) m (+ x m))))))
+      (0 (make-color :r (+ c m) :g (+ x m) :b m))
+      (1 (make-color :r (+ x m) :g (+ c m) :b m))
+      (2 (make-color :r m :g (+ c m) :b (+ x m)))
+      (3 (make-color :r m :g (+ x m) :b (+ c m)))
+      (4 (make-color :r (+ x m) :g m :b (+ c m)))
+      (5 (make-color :r (+ c m) :g m :b (+ x m))))))
 
 ;;;; text processing
 

@@ -11,12 +11,9 @@
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
-;;(defparameter *screen-bg* (make-array '(120 38) :element-type 'fixnum))
-(defparameter *screen-fg* (make-array '(120 38) :element-type 'fixnum))
-
 (loop for x from 0 below 120 do
      (loop for y from 1 below 38 do
-          (putchar 219 x y)))
+          (putchar 219 x y 1.0 0.0 0.0)))
    ;;(putchar (mod (+ (* x 38) y) 256) x y)))
        
 (draw-text "This is a bit of a longer test. We'll see if we can get a few lines of text this way." 1 10 50)
@@ -34,7 +31,7 @@
   (loop for x below 120 do
        (loop for y below 38 do
             (multiple-value-bind (tex-coord-x tex-coord-y)
-                (tex-coords-for-code (aref *screen-fg* x y))
+                (tex-coords-for-code (cell-draw-code (aref *screen-fg* x y)))
               (sdl2::c-let ((srect sdl2-ffi::sdl-rect :from *src-rect*)
                             (drect sdl2-ffi::sdl-rect :from *dst-rect*))
                 (setf (srect :x) tex-coord-x
@@ -45,9 +42,8 @@
               ;;(sdl2-ffi.functions:sdl-render-fill-rect *renderer* *dst-rect*)
               ;;(sdl2-ffi.functions:sdl-set-texture-color-mod *texture* (random 256) 0 0)
               ;;(sdl2:render-copy *renderer* *texture* :source-rect *src-rect* :dest-rect *dst-rect*)
-              (multiple-value-bind (r g b) (color-from-hsv (- (random 50) 25) .75 .75)
-                (declare (single-float r g b))
-                (sdl2-ffi.functions:sdl-set-texture-color-mod *texture* (floor (* 256 r)) (floor (* 256 g)) (floor (* 256 b))))
+              (let ((color (cell-draw-color (aref *screen-fg* x y))))
+                (sdl2-ffi.functions:sdl-set-texture-color-mod *texture* (floor (* 255 (color-r color))) (floor (* 255 (color-g color))) (floor (* 255 (color-b color)))))
               (sdl2:render-copy *renderer* *texture* :source-rect *src-rect* :dest-rect *dst-rect*))))
   (sdl2:render-present *renderer*)
   (incf *draw-count*))
