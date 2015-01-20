@@ -21,35 +21,35 @@ int main(int argc, char *argv[]) {
 
     for(int x=0; x<120; x++)
         for(int y=0; y<38; y++)
-            g->sdl().putChar(x, y, 255 - y - x, Color(x/240.0 + .5, 0, 0), ColorByName["BLACK"]);
+            SDLMan.putChar(x, y, 255 - y - x, Color(x/240.0 + .5, 0, 0), ColorByName["BLACK"]);
     for(int x=0; x<120; x++)
-        g->sdl().putChar(x, 4, '@', ColorByName["WHITE"], ColorByName["BLACK"]);
+        SDLMan.putChar(x, 4, '@', ColorByName["WHITE"], ColorByName["BLACK"]);
 
-    g->timer().Reset();
+    GlobTimer.Reset();
     
     auto play_state = std::unique_ptr<State>(new PlayState());
-    g->state = play_state.get();
+    GlobState = play_state.get();
 
-    double next_update = g->sdl().getTicks() + MS_PER_TICK;
-    g->set_running(true);
-    while(g->is_running()) {
-        g->sdl().draw();
+    double next_update = SDLMan.getTicks() + MS_PER_TICK;
+    GameRunning = true;
+    while(GameRunning) {
+        SDLMan.draw();
         frames++;
 
-        g->kb().poll_events();
-        g->state->handle_events();
+        GlobKeyboard.poll_events();
+        GlobState->handle_events();
 
         int update_loops = 0;
-        int cur_tick = g->sdl().getTicks();
+        int cur_tick = SDLMan.getTicks();
         while (cur_tick >= next_update && update_loops < MAX_DRAW_SKIPS) {
-            g->state->update();
+            GlobState->update();
             next_update += MS_PER_TICK;
             update_loops++;
         }
 
-        g->state->render();
+        GlobState->render();
     }
-    float elapsedTime = g->timer().Elapsed();
+    float elapsedTime = GlobTimer.Elapsed();
 
     printf("elapsed time = %f seconds\n", elapsedTime);
     printf("fps = %f\n", frames / elapsedTime);

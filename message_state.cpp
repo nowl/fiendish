@@ -8,7 +8,7 @@ void MessageState::handle_events()
     while (unhandled_key(key)) {
 
         if (key.scancode == SDL_SCANCODE_ESCAPE || key.scancode == SDL_SCANCODE_Q)
-            g->state = parentState;
+            GlobState = parentState;
     }
 }
 

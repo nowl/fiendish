@@ -53,7 +53,7 @@ struct PointHash {
     }
 };
 
-class Room {
+struct Room {
 public:
     int startX, startY, width, height;
 

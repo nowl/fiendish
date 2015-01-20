@@ -110,7 +110,7 @@ void PlayState::handle_events()
     while (unhandled_key(key)) {
 
         if (key.scancode == SDL_SCANCODE_ESCAPE || key.scancode == SDL_SCANCODE_Q)
-            g->set_running(false);
+            GameRunning = false;
 
         if (key.scancode == SDL_SCANCODE_D || key.scancode == SDL_SCANCODE_KP_6) {
             for(int x=0; x<CELLS_HORIZ; x++)
@@ -130,7 +130,7 @@ void PlayState::handle_events()
             player_move(Direction::NORTH, dungeon.get());
         else if (key.scancode == SDL_SCANCODE_M)
         {
-            g->state = message_state.get();
+            GlobState = message_state.get();
             return;
         }
     }
