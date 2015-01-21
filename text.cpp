@@ -170,7 +170,7 @@ int draw_string_fill(const std::string& str,
                      int max_lines,
                      bool do_draw)
 {
-    draw_tcmd_fill(parse_text_command(str),
-                   line_start, min_col, max_col,
-                   max_lines, do_draw);
+    return draw_tcmd_fill(parse_text_command(str),
+                          line_start, min_col, max_col,
+                          max_lines, do_draw);
 }

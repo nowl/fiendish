@@ -1,6 +1,7 @@
 .SUFFIXES:
 
-CXX := g++
+#CXX := g++
+CXX := clang++
 
 CXXFLAGS := -g -pipe -O2 -Wall \
 	-I. `sdl2-config --cflags` \

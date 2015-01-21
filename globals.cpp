@@ -13,7 +13,7 @@ struct CellTypeCatalog CellTypeCatalog[] = {
 };
 
 struct DirectionInfo DirectionInfo[] = {
-    "NORTH", "SOUTH", "EAST", "WEST"
+    {"NORTH"}, {"SOUTH"}, {"EAST"}, {"WEST"}
 };
 
 std::unique_ptr<Player> p(new Player());

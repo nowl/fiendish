@@ -229,7 +229,7 @@ void PlayState::render() {
             ColorByName["BLACK"]);
 
     // TODO: build a nearby monsters list
-    for (int i=0; i<monsters.size(); i++) {
+    for (int i=0; i < (int)monsters.size(); i++) {
         Monster& monster = monsters[i];
         auto iter = shadowMap.cbegin();
         for (; iter != shadowMap.cend(); ++iter) {
