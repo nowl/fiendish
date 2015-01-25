@@ -4,15 +4,15 @@
 
 #include "fiendish.h"
 
-//#define PI 3.14159265
+#define PI 3.14159265
 
 #define PHI 0x9e3779b9
 
 static uint32_t c = 362436;
 static uint32_t Q[4096];
 
-//double rng::other_norm;
-//bool rng::other_norm_available = false;
+static double other_norm;
+static int other_norm_available = 0;
  
 void rand_init(uint32_t x)
 {
@@ -73,39 +73,37 @@ int rand_max_inc(int max) {
     return rand_cmwc() % (max + 1);
 }
 
-/*
-int rng::i_min_max_inc(int min, int max) {
+int rand_min_max_inc(int min, int max) {
     return rand_cmwc() % (max - min + 1) + min;
 }
 
-float rng::f() {
-    return static_cast<float>(rand_cmwc()) / UINT_MAX;
+float rand_float(void) {
+    return (float)(rand_cmwc()) / UINT_MAX;
 }
 
-float rng::f_min_max(float min, float max) {
+float rand_float_min_max(float min, float max) {
     float range = max - min;
-    float val = f() * range;
+    float val = rand_float() * range;
     return val + min;
 }
 
-double rng::d() {
-    return static_cast<double>(rand_cmwc()) / UINT_MAX;
+double rand_double(void) {
+    return (double)(rand_cmwc()) / UINT_MAX;
 }
 
-double rng::normal() {
+double rand_normal(void) {
     if (other_norm_available) {
-        other_norm_available = false;
+        other_norm_available = 0;
         return other_norm;
     }
     
-    double u1 = d();
-    double u2 = d();
-    double R = std::sqrt(-2*std::log(u1));
+    double u1 = rand_double();
+    double u2 = rand_double();
+    double R = sqrt(-2*log(u1));
     double first_norm = R * cos(2*PI*u2);
     
-    other_norm_available = true;
+    other_norm_available = 1;
     other_norm = R * sin(2*PI*u2);
 
     return first_norm;
 }
-*/

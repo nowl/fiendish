@@ -8,6 +8,11 @@ int main(int argc, char *argv[]) {
     //rand_seed_good();
     rand_init(123);
     sdl_init();
+    lua_init();
+
+    lua_dofile("test.lua");
+
+    int frames_drawn = 0;
 
     int32_t keycode;
     uint16_t keymod;
@@ -18,27 +23,37 @@ int main(int argc, char *argv[]) {
         
         int result = sdl_pollevent(&keycode, &keymod);
         if (result) {
+            lua_handle_event(result, keycode, keymod);
+
             if (keycode == SDLK_ESCAPE)
                 running = 0;
             if (keycode == SDLK_d) {
                 int i;
                 for(i=0; i<100; i++) {
-                    struct color fg = {255,//rand_max_inc(255),
+                    struct color fg = {rand_max_inc(255),
                                        rand_max_inc(255),
                                        rand_max_inc(255)};
-                    sdl_putchar(rand_max_inc(CELLS_HORIZ-1),
-                                rand_max_inc(CELLS_VERT-1),
-                                '@',
+                    int x = (rand_normal() * 5) + 60;
+                    int y = (rand_normal() * 2.5) + 20;
+                    sdl_putchar(x,//rand_max_inc(CELLS_HORIZ-1),
+                                y,//rand_max_inc(CELLS_VERT-1),
+                                rand_max_inc(255),//'@',
                                 fg,
                                 bg);
                 }
             }
         }
         
+        frames_drawn++;
+        
         sdl_draw();
     }
 
+    lua_destroy();
     sdl_destroy();
+    
+    printf("frames = %d\n", frames_drawn);
+
     /*
     init_colors();
     

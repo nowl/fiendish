@@ -6,6 +6,9 @@
 #include "data.h"
 #include "codepage-437-hex.h"
 
+#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS)
+//#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
+
 static SDL_Window* Window;
 static SDL_Renderer* Ren;
 static SDL_Texture* Tex;
@@ -39,7 +42,7 @@ void sdl_init(void)
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         sdldie("Unable to initialize SDL");
     
-    Window = SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREENWIDTH, SCREENHEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE |SDL_WINDOW_BORDERLESS);
+    Window = SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREENWIDTH, SCREENHEIGHT, SDL_FLAGS);
     if (!Window)
         sdldie("Unable to create window");
 
@@ -123,11 +126,12 @@ sdl_pollevent(int32_t *keycode,
 {
     int result = SDL_PollEvent(&Event);
     if (result) {
-        if (Event.type != SDL_KEYDOWN)
+        if (Event.type != SDL_KEYDOWN && Event.type != SDL_KEYUP)
             result = 0;
         else {
             *keycode = Event.key.keysym.sym;
             *keymod = Event.key.keysym.mod;
+            result = Event.type;
         }            
     }
     return result;

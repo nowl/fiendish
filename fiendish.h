@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits.h>
 #include <memory.h>
 #include <assert.h>
 #include <math.h>
@@ -53,5 +54,17 @@ uint32_t rand_cmwc(void);
 void rand_seed_good(void);
 int rand_int(void);
 int rand_max_inc(int max);
+int rand_min_max_inc(int min, int max);
+float rand_float(void);
+float rand_float_min_max(float min, float max);
+double rand_double(void);
+double rand_normal(void);
+
+// lua
+
+void lua_dofile(const char *filename);
+int lua_init(void);
+void lua_destroy(void);
+void lua_handle_event(int result, int32_t keycode, uint16_t keymod);
 
 #endif  /* __FIENDISH_H__ */
