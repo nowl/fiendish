@@ -5,19 +5,19 @@
 
 static lua_State *L;
 
-static int cmwc(lua_State *L) {
-    lua_pushnumber(L, 4);
+static int lua_rand_double(lua_State *L) {
+    lua_pushnumber(L, rand_double());
     return 1;
 }
 
-static int init(lua_State *L) {
-    lua_pushnumber(L, 5);
+static int lua_getticks(lua_State *L) {
+    lua_pushnumber(L, sdl_getticks());
     return 1;
 }
 
 const luaL_Reg funcs[] = {
-    {"cmwc", cmwc},
-    {"init", init},
+    {"rand_double", lua_rand_double},
+    {"getticks", lua_getticks},
     {NULL, NULL}
 };
 

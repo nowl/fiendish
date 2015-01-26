@@ -6,8 +6,8 @@
 #include "data.h"
 #include "codepage-437-hex.h"
 
-#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS)
-//#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
+//#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS)
+#define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
 
 static SDL_Window* Window;
 static SDL_GLContext GLContext;
@@ -47,7 +47,7 @@ static void setupwindow(void)
 
     GLContext = SDL_GL_CreateContext(Window);
 
-    SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(1);
 }
 
 static void setupGL(void)

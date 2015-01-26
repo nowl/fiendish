@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
     while(running) {
         struct color bg = {0, 0, 0};
         
-        int result = sdl_pollevent(&keycode, &keymod);
-        if (result) {
+        int result;
+        while( (result = sdl_pollevent(&keycode, &keymod)) != 0) {
             lua_handle_event(result, keycode, keymod);
 
             if (keycode == SDLK_ESCAPE)
