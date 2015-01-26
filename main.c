@@ -30,9 +30,9 @@ int main(int argc, char *argv[]) {
             if (keycode == SDLK_d) {
                 int i;
                 for(i=0; i<100; i++) {
-                    struct color fg = {rand_max_inc(255),
-                                       rand_max_inc(255),
-                                       rand_max_inc(255)};
+                    struct color fg = {rand_float(),
+                                       rand_float(),
+                                       rand_float()};
                     int x = (rand_normal() * 5) + 60;
                     int y = (rand_normal() * 2.5) + 20;
                     sdl_putchar(x,//rand_max_inc(CELLS_HORIZ-1),

@@ -1,15 +1,15 @@
 .SUFFIXES:
 
-#CC := gcc
-CC := clang
+CC := gcc
+#CC := clang
 
-CFLAGS := -g -pipe -O2 -Wall \
+CFLAGS := -pipe -O2 -Wall \
 	-I. `sdl2-config --cflags` \
 	`pkg-config luajit --cflags` \
 	-D_REENTRANT -DLUA_USE_APICHECK
 
 TEST_BIN := fiendish
-TEST_LIBS := `sdl2-config --libs` -lpthread \
+TEST_LIBS := `sdl2-config --libs` -lGL -lpthread \
 	`pkg-config luajit --libs` -lm -ldl
 
 TEST_OBJ = \
@@ -50,7 +50,7 @@ clean:
 
 # for flymake
 check-syntax:
-	$(CC) $(CFLAGS) -Wall -Wextra -pedantic -fsyntax-only $(patsubst %.o, %.c, $(ALL_OBJ))
+	$(CC) $(CFLAGS) -Wall -Wextra -fsyntax-only $(patsubst %.o, %.c, $(ALL_OBJ))
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(ALL_DEP)
