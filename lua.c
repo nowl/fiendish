@@ -4,6 +4,7 @@
 #include <lauxlib.h>
 
 static lua_State *L;
+static int func_ref_event_handler;
 
 static int lua_rand_double(lua_State *L) {
     lua_pushnumber(L, rand_double());
@@ -15,9 +16,34 @@ static int lua_getticks(lua_State *L) {
     return 1;
 }
 
+static int lua_register_event_handler(lua_State *L) {
+    luaL_checktype(L, -1, LUA_TFUNCTION);
+    func_ref_event_handler = luaL_ref(L, LUA_REGISTRYINDEX);
+    return 0;
+}
+
+static int lua_putchar(lua_State *L) {
+    int x = luaL_checkint(L, 1);
+    int y = luaL_checkint(L, 2);
+    int c = luaL_checkint(L, 3);
+    lua_Number fgr = luaL_checknumber(L, 4);
+    lua_Number fgg = luaL_checknumber(L, 5);
+    lua_Number fgb = luaL_checknumber(L, 6);
+    lua_Number bgr = luaL_optnumber(L, 7, 0);
+    lua_Number bgg = luaL_optnumber(L, 8, 0);
+    lua_Number bgb = luaL_optnumber(L, 9, 0);
+
+    struct color fg = {fgr, fgg, fgb};
+    struct color bg = {bgr, bgg, bgb};
+    sdl_putchar(x, y, c, fg, bg);
+    return 0;
+}
+
 const luaL_Reg funcs[] = {
     {"rand_double", lua_rand_double},
     {"getticks", lua_getticks},
+    {"register_event_handler", lua_register_event_handler},
+    {"putchar", lua_putchar},
     {NULL, NULL}
 };
 
@@ -337,7 +363,7 @@ void lua_destroy(void) {
 
 void lua_handle_event(int result, int32_t keycode, uint16_t keymod)
 {
-    lua_getfield(L, LUA_GLOBALSINDEX, "handle_event"); 
+    lua_rawgeti(L, LUA_REGISTRYINDEX, func_ref_event_handler);
     lua_pushinteger(L, result);
     lua_pushinteger(L, keycode);
     lua_pushinteger(L, keymod);

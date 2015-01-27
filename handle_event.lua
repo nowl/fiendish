@@ -1,3 +1,10 @@
+function putchar(x, y, c, fgr, fgg, fgb, bgr, bgg, bgb)
+   if type(c) == "string" then
+      c = string.byte(c)
+   end
+   core.putchar(x, y, c, fgr, fgg, fgb, bgr, bgg, bgb)
+end
+
 -- simple event handler that just sets up the keyboard state
 
 function handle_event(etype, keycode, keymod)
@@ -16,5 +23,9 @@ function handle_event(etype, keycode, keymod)
 
       print (Keyboard:get_new_unhandled())
       print (Keyboard:get_pressed())
+
+      putchar(0, 0, '@', 0, core.rand_double(), 1.0, 0, 0, 0)
    end
 end
+
+core.register_event_handler(handle_event)
