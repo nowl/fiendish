@@ -5,6 +5,7 @@
 
 static lua_State *L;
 static int func_ref_event_handler;
+static int func_ref_update;
 
 static int lua_rand_double(lua_State *L) {
     lua_pushnumber(L, rand_double());
@@ -19,6 +20,12 @@ static int lua_getticks(lua_State *L) {
 static int lua_register_event_handler(lua_State *L) {
     luaL_checktype(L, -1, LUA_TFUNCTION);
     func_ref_event_handler = luaL_ref(L, LUA_REGISTRYINDEX);
+    return 0;
+}
+
+static int lua_register_update_handler(lua_State *L) {
+    luaL_checktype(L, -1, LUA_TFUNCTION);
+    func_ref_update = luaL_ref(L, LUA_REGISTRYINDEX);
     return 0;
 }
 
@@ -39,22 +46,20 @@ static int lua_putchar(lua_State *L) {
     return 0;
 }
 
+static int lua_end_game(lua_State* L) {
+    GameRunning = 0;
+    return 0;
+}
+
 const luaL_Reg funcs[] = {
     {"rand_double", lua_rand_double},
     {"getticks", lua_getticks},
     {"register_event_handler", lua_register_event_handler},
+    {"register_update_handler", lua_register_update_handler},
     {"putchar", lua_putchar},
+    {"end_game", lua_end_game},
     {NULL, NULL}
 };
-
-void lua_dofile(const char *filename) {
-    int exec = luaL_dofile(L, filename);
-    if (exec != 0) {
-        const char *err = luaL_checkstring(L, -1);
-        printf("error in lua: %s\n", err);
-        exit(1);
-    }
-}
 
 #define SET_CONSTANT(name)  {              \
         lua_pushinteger( L, name );        \
@@ -356,6 +361,14 @@ int lua_init(void) {
 
     return 0;
 }
+void lua_dofile(const char *filename) {
+    int exec = luaL_dofile(L, filename);
+    if (exec != 0) {
+        const char *err = luaL_checkstring(L, -1);
+        printf("error in lua: %s\n", err);
+        exit(1);
+    }
+}
 
 void lua_destroy(void) {
     lua_close(L);
@@ -371,6 +384,17 @@ void lua_handle_event(int result, int32_t keycode, uint16_t keymod)
     if (exec != 0) {
         const char *err = luaL_checkstring(L, -1);
         printf("error while calling 'handle_event': %s\n", err);
+        exit(1);
+    }
+}
+
+void lua_update(void)
+{
+    lua_rawgeti(L, LUA_REGISTRYINDEX, func_ref_update);
+    int exec = lua_pcall(L, 0, 0, 0);
+    if (exec != 0) {
+        const char *err = luaL_checkstring(L, -1);
+        printf("error while calling 'lua_update': %s\n", err);
         exit(1);
     }
 }

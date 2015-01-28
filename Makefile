@@ -16,7 +16,8 @@ TEST_OBJ = \
 	main.o \
 	sdl.o \
 	lua.o \
-	rng.o
+	rng.o \
+	globals.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)

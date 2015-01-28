@@ -18,6 +18,10 @@ function handle_event(etype, keycode, keymod)
       print(core.rand_double())
    end
 
+   if etype == core.SDL_KEYDOWN and keycode == core.SDLK_ESCAPE then
+      core.end_game()
+   end
+
    if etype == core.SDL_KEYDOWN and keycode == core.SDLK_k and bit.band(keymod, core.KMOD_CTRL) ~= 0 then
       Keyboard:print()
 
@@ -28,4 +32,3 @@ function handle_event(etype, keycode, keymod)
    end
 end
 
-core.register_event_handler(handle_event)

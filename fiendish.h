@@ -34,6 +34,12 @@
 #define TEXTURE_WIDTH  304
 #define TEXTURE_HEIGHT 144
 
+// globals
+
+extern int GameRunning;
+
+// structs
+
 struct color {
     float r, g, b;
 };
@@ -66,5 +72,6 @@ void lua_dofile(const char *filename);
 int lua_init(void);
 void lua_destroy(void);
 void lua_handle_event(int result, int32_t keycode, uint16_t keymod);
+void lua_update(void);
 
 #endif  /* __FIENDISH_H__ */
