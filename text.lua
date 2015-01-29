@@ -1,6 +1,6 @@
 -- move in reverse order and fill in the distance to next break for
 -- each character
-function fill_breaks(tokens, init_break_count)
+local function fill_breaks(tokens, init_break_count)
    local break_count = init_break_count
    for i = 1,#tokens do
       local j = #tokens - i + 1
@@ -17,7 +17,7 @@ function fill_breaks(tokens, init_break_count)
 end
 
 -- parses command tokens and compiles each one
-function compile_commands(tokens, str)
+local function compile_commands(tokens, str)
    for _, token in ipairs(tokens) do
       if token.type == 'command' then
          command_str = string.sub(str, token.start, token.stop)
@@ -45,6 +45,14 @@ function compile_commands(tokens, str)
    end
 end
 
+function is_whitespace(char)
+   if char == ' ' or char == '\n' or char == '\t' then
+      return true
+   else
+      return false
+   end
+end
+
 -- compile text string into text commands
 function compile_text(s)
    local command = {
@@ -54,7 +62,8 @@ function compile_text(s)
 
    local in_command = false
    local cmd_start = 0
-   for i = 1,#s do
+   local i=1
+   while i <= #s do
       if not in_command then
          if string.sub(s, i, i) ~= '{' and string.sub(s, i+1, i+1) ~= '[' then
             local token = {
@@ -65,7 +74,7 @@ function compile_text(s)
             table.insert(command.tokens, token)
             
             local this_char = string.sub(s, i, i)
-            if this_char == ' ' or this_char == '\n' or this_char == '\t' then
+            if is_whitespace(this_char) then
                fill_breaks(command.tokens, 0)
             end
          else
@@ -85,6 +94,8 @@ function compile_text(s)
             i = i + 2-1
          end
       end
+
+      i = i + 1
    end
 
    fill_breaks(command.tokens, 1)
