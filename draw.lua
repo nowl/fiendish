@@ -27,16 +27,14 @@ function putstring(str, x, y, xmax, ymax)
       if token.type == 'char' then
          local char = string.sub(str.string, token.start, token.stop)
          
-         if not is_whitespace(char) or space_remaining >= 1 then
+         if space_remaining >= token.to_next_break then
             putchar(col, row, char, fg_color.r, fg_color.g, fg_color.b,
                     bg_color.r, bg_color.g, bg_color.b)
             col = col + 1
+         elseif is_whitespace(char) then
+            row = row + 1
+            col = x
          end
-      end
-
-      if space_remaining < token.to_next_break then
-         row = row + 1
-         col = x
       end
    end
 end

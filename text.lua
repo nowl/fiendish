@@ -1,9 +1,9 @@
 -- move in reverse order and fill in the distance to next break for
 -- each character
-local function fill_breaks(tokens, init_break_count)
-   local break_count = init_break_count
-   for i = 1,#tokens do
-      local j = #tokens - i + 1
+local function fill_breaks(tokens, lag)
+   local break_count = 0
+   for i = 1,#tokens-lag do
+      local j = #tokens - lag - i + 1
       if tokens[j].to_next_break ~= nil then
          break
       end
@@ -75,7 +75,7 @@ function compile_text(s)
             
             local this_char = string.sub(s, i, i)
             if is_whitespace(this_char) then
-               fill_breaks(command.tokens, 0)
+               fill_breaks(command.tokens, 1)
             end
          else
             in_command = true
@@ -98,7 +98,7 @@ function compile_text(s)
       i = i + 1
    end
 
-   fill_breaks(command.tokens, 1)
+   fill_breaks(command.tokens, 0)
 
    compile_commands(command.tokens, s)
 

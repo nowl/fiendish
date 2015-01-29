@@ -8,7 +8,7 @@ local result = compile_text('Testing {[chsv 120 .75 .8]}hello{[creset]} resettin
 function update()
    --print 'update'
    --require 'pl.pretty'.dump(result)
-   putstring(result, 10, 10, 30, 15)
+   putstring(result, 10, 10, 40, 15)
 end
 
 core.register_event_handler(handle_event)

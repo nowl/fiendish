@@ -1,5 +1,3 @@
-local pretty = require 'pl.pretty'
-
 -- simple event handler that just sets up the keyboard state
 
 function handle_event(etype, keycode, keymod)
