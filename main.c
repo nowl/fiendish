@@ -22,8 +22,14 @@ int main(int argc, char *argv[]) {
     
     while(GameRunning) {
         int result;
-        while( (result = sdl_pollevent(&keycode, &keymod)) != 0)
+        while( (result = sdl_pollevent(&keycode, &keymod)) != 0) {
+            /* reload lua */
+            if(result == SDL_KEYDOWN && keycode == SDLK_F12 && keymod == 0) {
+                lua_dofile("main.lua");
+            }
+            
             lua_handle_event(result, keycode, keymod);
+        }
         
         int current_time = sdl_getticks();
         while (current_time >= next_tick) {

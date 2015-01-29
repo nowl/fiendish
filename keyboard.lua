@@ -8,6 +8,7 @@ Keyboard = {
 
    -- sets up a pressed key in the keyboard state
    press = function (self, key)
+      -- TODO this probably shouldn't allocate a new table each time
       self.keys[key] = {
          pressed = true,
          time_pressed = core.getticks(),
@@ -58,6 +59,7 @@ Keyboard = {
 
    -- debugging funtion to display the keystate
    print = function (self)
+      --[[
       io.write ('key map', '\n')
       for k,v in pairs(self.keys) do
          io.write ('key: ', k, ' ')
@@ -66,5 +68,8 @@ Keyboard = {
          end
          print ()
       end
+      ]]--
+      require 'pl.pretty'.dump(self.keys)
+      
    end,                       
 }
