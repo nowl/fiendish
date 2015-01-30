@@ -1,24 +1,34 @@
 -- keyboard state
 
-local INITIAL_KEY_DELAY_MS = 150
+local INITIAL_KEY_DELAY_MS = 200
 local REPEAT_DELAY_MS = 60
 
 Keyboard = {
    keys = {},
 
    -- sets up a pressed key in the keyboard state
-   press = function (self, key)
-      -- TODO this probably shouldn't allocate a new table each time
-      self.keys[key] = {
-         pressed = true,
-         time_pressed = core.getticks(),
-         handled = false,
-      }
+   press = function (self, key, keymod)
+      if self.keys[key] ~= nil then
+         if self.keys[key].pressed == false then
+            self.keys[key].pressed = true
+            self.keys[key].time_pressed = core.getticks()
+            self.keys[key].handled = false
+            self.keys[key].keymod = keymod
+         end
+      else
+         self.keys[key] = {
+            pressed = true,
+            time_pressed = core.getticks(),
+            handled = false,
+            keymod = keymod,
+         }
+      end
    end,
 
    -- when the user releases a key this controls the key state
    release = function (self, key)
       self.keys[key].pressed = false
+      self.keys[key].in_repeat = false
    end,
 
    -- get new key presses to be handled
@@ -34,7 +44,8 @@ Keyboard = {
       return unhandled_keys
    end,
 
-   -- get keys that are pressed
+   -- get keys that are pressed based on initial repeat and continuous
+   -- repeat
    get_pressed = function (self)
       local pressed_keys = {}
       for k,v in pairs(self.keys) do
@@ -57,19 +68,13 @@ Keyboard = {
       return pressed_keys
    end,
 
-   -- debugging funtion to display the keystate
+   -- debugging function to display the keystate
    print = function (self)
-      --[[
-      io.write ('key map', '\n')
-      for k,v in pairs(self.keys) do
-         io.write ('key: ', k, ' ')
-         for k2,v2 in pairs(v) do
-            io.write(k2, ':', tostring(v2), ' ')
-         end
-         print ()
-      end
-      ]]--
       require 'pl.pretty'.dump(self.keys)
-      
-   end,                       
+   end,
+
+   -- is control pressed for the given key?
+   control_pressed = function (self, key)
+      return bit.band(self.keys[key].keymod, core.KMOD_CTRL) ~= 0
+   end,
 }
