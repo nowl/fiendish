@@ -1,10 +1,5 @@
 #pragma once
 
-#include <climits>
-#include <cstdio>
-#include <cassert>
-#include <stdint.h>
-
 class rng {
 private:
     static uint32_t Q[4096];

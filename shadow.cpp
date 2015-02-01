@@ -1,8 +1,4 @@
-#include <algorithm>
-#include <vector>
-#include <iostream>
-
-#include "shadow.hpp"
+#include "fiendish.hpp"
 
 static void Scan(int depth, int radius,
                  int startx, int starty,

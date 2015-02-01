@@ -1,7 +1,4 @@
-#include <deque>
-
-#include "messages.hpp"
-#include "globals.hpp"
+#include "fiendish.hpp"
 
 static std::deque<TextCommand> messages;
 

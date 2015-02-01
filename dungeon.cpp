@@ -1,15 +1,4 @@
-#include <cstdlib>
-#include <vector>
-#include <algorithm>
-#include <cassert>
-#include <map>
-
-#include "dungeon.hpp"
-#include "globals.hpp"
-
-#ifdef DEBUG_GRAPH
-# include <iostream>
-#endif
+#include "fiendish.hpp"
 
 using namespace std;
 

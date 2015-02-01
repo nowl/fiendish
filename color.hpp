@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
 struct Color {
     float r, g, b;
 

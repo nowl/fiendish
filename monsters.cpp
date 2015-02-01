@@ -1,4 +1,4 @@
-#include "monsters.hpp"
+#include "fiendish.hpp"
 
 void populateMonsters(Dungeon *dungeon, std::vector<Monster>& monsters)
 {

@@ -1,13 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "state.hpp"
-
-#include "dungeon.hpp"
-#include "shadow.hpp"
-#include "monsters.hpp"
-
 class PlayState : public State {
 public:
 	PlayState();

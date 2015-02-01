@@ -1,10 +1,4 @@
-#include <sys/time.h>
-#include <cstdio>
-#include <deque>
-#include <vector>
-#include <memory>
-#include <unordered_map>
-#include <sstream>
+#include "fiendish.hpp"
 
 #define WIDTH 1200
 #define HEIGHT 380

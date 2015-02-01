@@ -1,6 +1,4 @@
-#include <cmath>
-
-#include "color.hpp"
+#include "fiendish.hpp"
 
 std::unordered_map<std::string, Color> ColorByName;
 

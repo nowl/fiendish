@@ -1,20 +1,6 @@
 #pragma once
 
-#include <memory>
-
-#include "state.hpp"
-#include "timer.hpp"
-#include "keyboard.hpp"
-#include "sdl.hpp"
-#include "player.hpp"
-#include "dungeon.hpp"
-
-extern Timer GlobTimer;
-extern State *GlobState;
-extern SDL SDLMan;
-extern bool GameRunning;
-extern keyboard GlobKeyboard;
-
+extern std::unique_ptr<Game> g;
 extern std::unique_ptr<Player> p;
 
 extern CellTypeCatalog CellTypeCatalog[];

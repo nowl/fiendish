@@ -3,8 +3,6 @@
 #include <memory>
 #include <SDL.h>
 
-#include "color.hpp"
-
 #define PROGRAM_NAME "Mordell Engine"
 
 // this is the number of cells across and down the screen

@@ -1,11 +1,5 @@
 #pragma once
 
-#include <deque>
-
-#include <SDL.h>
-
-#include "sdl.hpp"
-
 #define INITIAL_DELAY_MS     250
 #define REPEAT_RATE_MS       60
 

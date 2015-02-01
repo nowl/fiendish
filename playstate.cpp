@@ -1,11 +1,4 @@
-#include <cstdio>
-#include "playstate.hpp"
-#include "message_state.hpp"
-#include "globals.hpp"
-#include "rng.hpp"
-#include "keyboard.hpp"
-#include "text.hpp"
-#include "messages.hpp"
+#include "fiendish.hpp"
 
 class DungeonFOVResponse : public FOVResponse {
 public:
@@ -110,7 +103,7 @@ void PlayState::handle_events()
     while (unhandled_key(key)) {
 
         if (key.scancode == SDL_SCANCODE_ESCAPE || key.scancode == SDL_SCANCODE_Q)
-            GameRunning = false;
+            g->GameRunning = false;
 
         if (key.scancode == SDL_SCANCODE_D || key.scancode == SDL_SCANCODE_KP_6) {
             for(int x=0; x<CELLS_HORIZ; x++)
@@ -130,7 +123,7 @@ void PlayState::handle_events()
             player_move(Direction::NORTH, dungeon.get());
         else if (key.scancode == SDL_SCANCODE_M)
         {
-            GlobState = message_state.get();
+            g->GlobState = message_state.get();
             return;
         }
     }

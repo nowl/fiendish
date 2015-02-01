@@ -1,9 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <vector>
-#include <iostream>
-
 class FOVResponse {
 public:
     virtual void visitTile(int x, int y, float intensity) = 0;

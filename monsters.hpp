@@ -1,7 +1,5 @@
 #pragma once
 
-#include "dungeon.hpp"
-
 struct MonsterCatalog {
     int symbol;    
 };

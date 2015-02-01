@@ -3,13 +3,6 @@
 #ifndef __DUNGEON_HPP__
 #define __DUNGEON_HPP__
 
-#include <vector>
-#include <memory>
-#include <unordered_map>
-
-#include "rng.hpp"
-#include "color.hpp"
-
 #define MAX_MAP_HEIGHT 100000
 
 enum class CellType {

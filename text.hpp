@@ -1,10 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
-#include "color.hpp"
-
 enum class TextTokenType {
     CHAR,
     COMMAND

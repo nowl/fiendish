@@ -1,6 +1,4 @@
-#include "message_state.hpp"
-#include "globals.hpp"
-#include "messages.hpp"
+#include "fiendish.hpp"
 
 void MessageState::handle_events()
 {
@@ -8,7 +6,7 @@ void MessageState::handle_events()
     while (unhandled_key(key)) {
 
         if (key.scancode == SDL_SCANCODE_ESCAPE || key.scancode == SDL_SCANCODE_Q)
-            GlobState = parentState;
+            g->GlobState = parentState;
     }
 }
 

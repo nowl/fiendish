@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
-
-#include "sdl.hpp"
+#include "fiendish.hpp"
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
