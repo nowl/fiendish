@@ -8,9 +8,8 @@ int main(int argc, char *argv[]) {
     //rand_seed_good();
     rand_init(123);
     sdl_init();
-    lua_init();
-
-    lua_dofile("main.lua");
+    
+    game_init();
 
     int frames = 0;
     int ticks = 0;
@@ -23,26 +22,20 @@ int main(int argc, char *argv[]) {
     while(GameRunning) {
         int result;
         while( (result = sdl_pollevent(&keycode, &keymod)) != 0) {
-            /* reload lua */
-            if(result == SDL_KEYDOWN && keycode == SDLK_F12 && keymod == 0) {
-                lua_dofile("main.lua");
-            }
-            
-            lua_handle_event(result, keycode, keymod);
+            new_input(result, keycode, keymod);
         }
         
         int current_time = sdl_getticks();
         while (current_time >= next_tick) {
-            lua_update();
             ticks++;
             next_tick += MS_PER_TICK;
         }
-
+        
+        render_world();
         sdl_draw();
         frames++;        
     }
 
-    lua_destroy();
     sdl_destroy();
     
     printf("frames = %d\n", frames);

@@ -34,14 +34,14 @@
 #define TEXTURE_WIDTH  304
 #define TEXTURE_HEIGHT 144
 
-// globals
-
-extern int GameRunning;
-
-// structs
+// data structures
 
 struct color {
     float r, g, b;
+};
+
+struct player {
+    int x, y;
 };
 
 // sdl
@@ -66,12 +66,18 @@ float rand_float_min_max(float min, float max);
 double rand_double(void);
 double rand_normal(void);
 
-// lua
+// drawing
+void render_world(void);
+struct color hsv_to_col(float h, float s, float v);
 
-void lua_dofile(const char *filename);
-int lua_init(void);
-void lua_destroy(void);
-void lua_handle_event(int result, int32_t keycode, uint16_t keymod);
-void lua_update(void);
+// controller
+void new_input(int key_up_down, int32_t keycode, uint16_t keymod);
+
+// globals
+
+void game_init(void);
+
+extern int GameRunning;
+extern struct player Player;
 
 #endif  /* __FIENDISH_H__ */
