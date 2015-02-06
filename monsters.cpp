@@ -1,4 +1,6 @@
-#include "fiendish.hpp"
+#include "monsters.hpp"
+#include "dungeon.hpp"
+#include "rng.hpp"
 
 void populateMonsters(Dungeon *dungeon, std::vector<Monster>& monsters)
 {

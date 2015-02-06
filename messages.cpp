@@ -1,4 +1,9 @@
-#include "fiendish.hpp"
+#include <deque>
+#include <cassert>
+
+#include "messages.hpp"
+#include "color.hpp"
+#include "globals.hpp"
 
 static std::deque<TextCommand> messages;
 

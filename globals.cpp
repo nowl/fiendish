@@ -1,4 +1,5 @@
-#include "fiendish.hpp"
+#include "globals.hpp"
+#include "player.hpp"
 
 struct CellTypeCatalog CellTypeCatalog[] = {
     {false, "BEDROCK", {240, 240, 0.5, 0.5, 1, 1}},

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "sdl.hpp"
+
+#include <deque>
+
 #define INITIAL_DELAY_MS     250
 #define REPEAT_RATE_MS       60
 

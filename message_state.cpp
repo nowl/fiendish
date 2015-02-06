@@ -1,4 +1,7 @@
-#include "fiendish.hpp"
+#include "message_state.hpp"
+#include "keyboard.hpp"
+#include "globals.hpp"
+#include "messages.hpp"
 
 void MessageState::handle_events()
 {

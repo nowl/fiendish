@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sys/time.h>
+
 class Timer {
 public:
     Timer() { Reset(); }

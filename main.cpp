@@ -1,4 +1,7 @@
-#include "fiendish.hpp"
+#include "rng.hpp"
+#include "color.hpp"
+#include "globals.hpp"
+#include "playstate.hpp"
 
 #define TICKS_PER_SEC     60
 #define MS_PER_TICK       (1000.0 / TICKS_PER_SEC)

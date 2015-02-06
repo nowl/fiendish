@@ -1,5 +1,13 @@
 #pragma once
 
+#include <memory>
+
+#include "game.hpp"
+#include "dungeon.hpp"
+
+struct Game;
+class Player;
+
 extern std::unique_ptr<Game> g;
 extern std::unique_ptr<Player> p;
 

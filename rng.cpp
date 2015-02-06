@@ -2,7 +2,12 @@
  *    http://en.wikipedia.org/wiki/Multiply-with-carry
  */
 
-#include "fiendish.hpp"
+#include <cmath>
+#include <climits>
+#include <cassert>
+#include <cstdio>
+
+#include "rng.hpp"
 
 #define PI 3.14159265
 

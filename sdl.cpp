@@ -1,4 +1,4 @@
-#include "fiendish.hpp"
+#include "sdl.hpp"
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>

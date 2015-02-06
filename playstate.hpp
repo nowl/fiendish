@@ -1,5 +1,11 @@
 #pragma once
 
+#include "dungeon.hpp"
+#include "state.hpp"
+
+class FOVResponse;
+class Monster;
+
 class PlayState : public State {
 public:
 	PlayState();

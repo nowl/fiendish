@@ -1,4 +1,11 @@
-#include "fiendish.hpp"
+#include <memory>
+#include <cassert>
+#include <algorithm>
+#include <map>
+
+#include "dungeon.hpp"
+#include "globals.hpp"
+#include "rng.hpp"
 
 using namespace std;
 

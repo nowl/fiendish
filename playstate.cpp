@@ -1,4 +1,15 @@
-#include "fiendish.hpp"
+#include <memory>
+#include <cmath>
+#include <cassert>
+
+#include "shadow.hpp"
+#include "playstate.hpp"
+#include "messages.hpp"
+#include "monsters.hpp"
+#include "globals.hpp"
+#include "player.hpp"
+#include "message_state.hpp"
+#include "rng.hpp"
 
 class DungeonFOVResponse : public FOVResponse {
 public:

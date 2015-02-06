@@ -1,4 +1,10 @@
-#include "fiendish.hpp"
+#include <string>
+#include <vector>
+#include <cassert>
+
+#include "text.hpp"
+#include "color.hpp"
+#include "globals.hpp"
 
 static void
 fill_breaks(std::vector<TextToken>& tokens,

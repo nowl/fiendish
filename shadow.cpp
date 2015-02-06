@@ -1,4 +1,4 @@
-#include "fiendish.hpp"
+#include "shadow.hpp"
 
 static void Scan(int depth, int radius,
                  int startx, int starty,

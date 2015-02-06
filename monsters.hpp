@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+class Dungeon;
+
 struct MonsterCatalog {
     int symbol;    
 };

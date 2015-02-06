@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 class rng {
 private:
     static uint32_t Q[4096];
