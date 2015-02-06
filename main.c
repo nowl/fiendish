@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
         while (current_time >= next_tick) {
             ticks++;
             next_tick += MS_PER_TICK;
+            update();
         }
         
         render_world();

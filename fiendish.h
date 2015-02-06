@@ -30,10 +30,6 @@
 #define SCREENWIDTH   1920
 #define SCREENHEIGHT  (SCREENWIDTH * 9 / 16)
 
-// this is the size of the codepage437 texture
-#define TEXTURE_WIDTH  304
-#define TEXTURE_HEIGHT 144
-
 // data structures
 
 struct color {
@@ -72,6 +68,7 @@ struct color hsv_to_col(float h, float s, float v);
 
 // controller
 void new_input(int key_up_down, int32_t keycode, uint16_t keymod);
+void update(void);
 
 // globals
 

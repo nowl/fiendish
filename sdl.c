@@ -1,5 +1,9 @@
 #include "fiendish.h"
 
+// this is the size of the codepage437 texture
+#define TEXTURE_WIDTH  304
+#define TEXTURE_HEIGHT 144
+
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 

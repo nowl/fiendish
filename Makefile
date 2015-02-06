@@ -15,7 +15,8 @@ TEST_OBJ = \
 	rng.o \
 	globals.o \
 	draw.o \
-	controller.o
+	controller.o \
+	dungeon.o
 
 ALL_BIN := $(TEST_BIN)
 ALL_OBJ := $(TEST_OBJ)
