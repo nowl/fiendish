@@ -41,4 +41,7 @@ int main(int argc, char *argv[]) {
     
     printf("frames = %d\n", frames);
     printf("ticks = %d\n", ticks);
+
+    struct mem_buf *mb = compile_text_command("This is a {[chsv 120 .75 .8]} test {[creset]}.");
+    printf("%d\n", mb->usage);
 }

@@ -40,6 +40,12 @@ struct player {
     int x, y;
 };
 
+struct mem_buf {
+    void *mem;                  /* malloced buffer */
+    size_t usage;               /* in bytes */
+    size_t cap;                 /* in bytes */
+};
+
 // sdl
 
 void sdl_init(void);
@@ -69,6 +75,20 @@ struct color hsv_to_col(float h, float s, float v);
 // controller
 void new_input(int key_up_down, int32_t keycode, uint16_t keymod);
 void update(void);
+
+// text
+
+// utils
+
+/* Double memory buffer until it will fit "size" bytes. Also returns
+ * the same buffer. NULL can be passed as the buffer and it will be
+ * instatiated. */
+struct mem_buf *mem_buf_size(struct mem_buf *buf, size_t size, char update_usage);
+void mem_buf_free(struct mem_buf *buf);
+
+/* Compare two strings with the first string "s" being a substring
+ * defined by start and end. Assumes "t" is of length end-start.  */
+char substr_compare(char *s, int start, int end, char *t);
 
 // globals
 
