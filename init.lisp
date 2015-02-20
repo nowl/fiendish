@@ -13,5 +13,7 @@
   (require :fiendish-rl))
   ;;(asdf:oos 'asdf:load-op 'fiendish-rl))
 
+(push #p"/home/nowl/dev/fiendish/" cffi:*foreign-library-directories*)
+
 (time (fiendish-rl::run))
 (quit)

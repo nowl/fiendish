@@ -1,60 +1,43 @@
 (in-package :fiendish-rl)
 
-;;(defparameter *width* 1920)
-;;(defparameter *height* (floor (/ (* *width* 9) 16)))
-
-(defparameter *height* 720)
-(defparameter *width* (floor (/ (* *height* 16) 9)))
-
-(defparameter *src-rect* (sdl2:make-rect 0 0 9 16))
-(defparameter *dst-rect* (sdl2:make-rect 0 0 9 16))
-(defparameter *renderer* nil)
-(defparameter *texture* nil)
-
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
-;;(defparameter *sdl-flags* '(:shown :resizable :maximized :borderless))
-(defparameter *sdl-flags* '(:shown :resizable))
-
-(loop for x from 0 below 120 do
-     (loop for y from 0 below 38 do
-          (putchar 219 x y 1.0 0.0 0.0)))
-   ;;(putchar (mod (+ (* x 38) y) 256) x y)))
-       
-(draw-text "This is a bit of a {(chsv 240.0 .74 .8)}longer{(creset)} test. We'll see if we can get a few lines of text this way." 1 10 50)
-
-(defun tex-coords-for-code (char-code)
-  (declare ((unsigned-byte 8) char-code)
-           (optimize (safety 0) (speed 3) (debug 0)))
-  (let ((row (floor (/ char-code 32)))
-        (col (mod char-code 32)))
-    (values (+ (* 9 col) 8)
-            (+ (* 16 row) 8))))
+(defparameter *text-draw-row* 0.0)
 
 (defun draw ()
-  (sdl2-ffi.functions:sdl-render-clear *renderer*)
   (loop for x below 120 do
-       (loop for y below 38 do
-            (multiple-value-bind (tex-coord-x tex-coord-y)
-                (tex-coords-for-code (cell-draw-code (aref *screen-fg* x y)))
-              (sdl2::c-let ((srect sdl2-ffi::sdl-rect :from *src-rect*)
-                            (drect sdl2-ffi::sdl-rect :from *dst-rect*))
-                (setf (srect :x) tex-coord-x
-                      (srect :y) tex-coord-y
-                      (drect :x) (* x 9)
-                      (drect :y) (* y 16)))
-              ;;(sdl2-ffi.functions:sdl-set-render-draw-color *renderer* 0 0 0 0)
-              ;;(sdl2-ffi.functions:sdl-render-fill-rect *renderer* *dst-rect*)
-              ;;(sdl2-ffi.functions:sdl-set-texture-color-mod *texture* (random 256) 0 0)
-              ;;(sdl2:render-copy *renderer* *texture* :source-rect *src-rect* :dest-rect *dst-rect*)
-              (let ((color (cell-draw-color (aref *screen-fg* x y))))
-                (sdl2-ffi.functions:sdl-set-texture-color-mod *texture* (floor (* 255 (color-r color))) (floor (* 255 (color-g color))) (floor (* 255 (color-b color)))))
-              (sdl2:render-copy *renderer* *texture* :source-rect *src-rect* :dest-rect *dst-rect*))))
-  (sdl2:render-present *renderer*)
-  (incf *draw-count*))
+              (loop for y below 38 do
+                   (fiendish-rl.ffi:putchar x y (char-code #\@) 0.0 (random 0.7) (random .9) 0.0 0.0 0.0)))
+  (setf *text-draw-row*
+        (if (> *text-draw-row* 30) 10 (+ 0.1 *text-draw-row*)))
+  (let ((the-string (format nil "This is a bit of a {(chsv ~f .74 .8)}longer{(creset)} test. We'll see if we can get a few lines of text this way." (* 2 *text-draw-row*))))
+    (draw-text the-string 1 (round *text-draw-row*) 50)))
+
+(defun gameloop ()
+  (setf *startup-time-ms* (fiendish-rl.ffi:getticks)
+        *draw-count* 0)
+  (let ((running t))
+    (loop while running do
+         (destructuring-bind (result key mod) (fiendish-rl.ffi:pollevent)
+           (when (and result (= key (char-code #\escape))) (setf running nil)))
+         (draw)
+         (fiendish-rl.ffi:draw)
+         (incf *draw-count*)))
+
+  (let* ((end-time-ms (fiendish-rl.ffi:getticks))
+         (elapsed-time (- end-time-ms *startup-time-ms*))
+         (average-fps (float (/ (* 1000 *draw-count*) elapsed-time))))
+    (format t "frames drawn = ~a~%" *draw-count*)
+    (format t "elapsed time = ~a~%" elapsed-time)
+    (format t "average fps = ~a~%" average-fps)))
 
 (defun run ()
+  (unwind-protect (progn (fiendish-rl.ffi:init)
+                         (gameloop))
+    (fiendish-rl.ffi:destroy)))
+
+#|
   (sdl2:with-init (:video)
     (setf *draw-count* 0
           *startup-time-ms* (sdl2:get-ticks))
@@ -111,3 +94,4 @@
       (sdl2:destroy-texture *texture*)
       (sdl2-ffi.functions:sdl-destroy-renderer *renderer*)
       (sdl2:destroy-window win))))
+#|
