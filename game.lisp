@@ -3,8 +3,13 @@
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
-(defparameter *text-draw-row* 0.0)
+(defparameter *text-draw-x* 0.0)
 
+(defparameter *font* nil)
+
+(defparameter *cycle-x* 0)
+
+#|
 (defun draw ()
   (loop for x below 120 do
               (loop for y below 38 do
@@ -13,21 +18,48 @@
         (if (> *text-draw-row* 30) 10 (+ 0.1 *text-draw-row*)))
   (let ((the-string (format nil "This is a bit of a {(chsv ~f .74 .8)}longer{(creset)} test. We'll see if we can get a few lines of text this way." (* 2 *text-draw-row*))))
     (draw-text the-string 1 (round *text-draw-row*) 50)))
+|#
+
+(defun draw ()
+  (let* ((rad 5)
+         (dx (round (* rad (cos *cycle-x*))))
+         (dy (round (* rad (sin *cycle-x*)))))
+    (loop for x from 0 to 20 do
+         (loop for y from 0 to 15 do
+              (fiendish-rl.ffi::sdl-blit 0 0 16 16 (+ dx (* x 32)) (+ dy (* y 32)) 32 32))))
+  (incf *cycle-x* 0.1)
+  (let ((x (round *text-draw-x*)))
+    (fiendish-rl.ffi::draw-text *font* "This is a test! Can you read this?" 
+                                0 10 0 0 240 255)
+    (fiendish-rl.ffi::draw-text *font* "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+                                0 30 0 0 240 255)
+    (fiendish-rl.ffi::draw-text *font* "abcdefghijklmnopqrstuvwxyz" 
+                                0 50 0 0 240 100)
+    (fiendish-rl.ffi::draw-text *font* "1234567890" 
+                                0 70 0 0 240 255)
+    (incf *text-draw-x* 0.5)
+    (if (> *text-draw-x* (- 200 10))
+        (setf *text-draw-x* 0))))
 
 (defun gameloop ()
   (setf *startup-time-ms* (fiendish-rl.ffi:getticks)
-        *draw-count* 0)
+        *draw-count* 0
+        *font* 
+        ;;(fiendish-rl.ffi::open-font "DroidSerif-Regular.ttf" 10))
+        (fiendish-rl.ffi::open-font "DroidSans-Bold.ttf" 16))
+  (fiendish-rl.ffi::sdl-set-texture-source "player1.png")
   (let ((running t))
     (loop while running do
          (destructuring-bind (result key mod) (fiendish-rl.ffi:pollevent)
-           (when (and result (= key (char-code #\escape))) (setf running nil)))
+           (when (and result (= key (char-code #\escape))) (setf running nil)))         
+         (fiendish-rl.ffi::clear)
          (draw)
          (fiendish-rl.ffi:draw)
          (incf *draw-count*)))
 
   (let* ((end-time-ms (fiendish-rl.ffi:getticks))
-         (elapsed-time (- end-time-ms *startup-time-ms*))
-         (average-fps (float (/ (* 1000 *draw-count*) elapsed-time))))
+         (elapsed-time (/ (- end-time-ms *startup-time-ms*) 1000.0))
+         (average-fps (float (/ *draw-count* elapsed-time))))
     (format t "frames drawn = ~a~%" *draw-count*)
     (format t "elapsed time = ~a~%" elapsed-time)
     (format t "average fps = ~a~%" average-fps)))

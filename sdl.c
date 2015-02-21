@@ -8,7 +8,7 @@
 static SDL_Window* Window;
 static SDL_Renderer* Ren;
 static SDL_Event Event;
-static int Dirty = 1;
+//static int Dirty = 1;
 static SDL_Rect SrcRect = {0, 0, 9, 16};
 static SDL_Rect DstRect = {0, 0, 9, 16};
 static SDL_Texture *Tex;
@@ -58,14 +58,16 @@ int sdl_getticks(void) {
     return SDL_GetTicks();
 }
 
-void sdl_draw(void) {
-    if (Dirty) {
-        Dirty = 0;
+void sdl_clear(void) {
+    //if (Dirty)
+    SDL_RenderClear(Ren);
+}
 
-        //SDL_RenderClear(Ren);
-        
-        SDL_RenderPresent(Ren);
-    }
+void sdl_draw(void) {
+    //if (Dirty) {
+    //    Dirty = 0;        
+    SDL_RenderPresent(Ren);
+    //}
 }
 
 int
@@ -101,7 +103,7 @@ void
 sdl_blit(int sx, int sy, int sw, int sh,
          int dx, int dy, int dw, int dh)
 {
-    Dirty = 1;
+    //Dirty = 1;
     
     SrcRect.x = sx;
     SrcRect.y = sy;
@@ -131,11 +133,12 @@ void draw_text(TTF_Font *font,
                unsigned char b,
                unsigned char a)
 {
-    Dirty = 1;
+    //Dirty = 1;
 
     SDL_Color color = {r, g, b, a};
     
     SDL_Surface *image = TTF_RenderText_Solid(font, text, color);
+    //SDL_Surface *image = TTF_RenderText_Blended(font, text, color);
     if(!image)
         sdldie("problem loading image");
     SDL_Texture *texture = SDL_CreateTextureFromSurface(Ren, image);

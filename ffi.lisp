@@ -21,6 +21,9 @@
 (defcfun ("sdl_draw" draw)
   :void)
 
+(defcfun ("sdl_clear" clear)
+  :void)
+
 (defcfun ("sdl_getticks" getticks)
   :int32)
 
@@ -61,7 +64,8 @@
 
 (defun init ()
   (use-foreign-library fiend)
-  (sdl-init "fiendish" 800 600 800 600))
+  ;;(sdl-init "fiendish" 1280 720 320 200))
+  (sdl-init "fiendish" 1280 720 640 480))
 
 (defun destroy ()
   (sdl-destroy)
