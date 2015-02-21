@@ -6,14 +6,11 @@
   :version "0.1"
   :author "John Process <esologic@gmail.com>"
   :licence "GNU Public License"
-  :depends-on ("sdl2")
+  :depends-on ("cffi")
   :components
   ((:file "package")
    (:file "core")
-   (:file "codepage-437")
-   (:file "rng")
-   (:file "dungeoneer")
-   (:file "drawing")
+   (:file "ffi")
    (:file "game"))
   :serial t)
   

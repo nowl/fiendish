@@ -26,7 +26,7 @@
          (dy (round (* rad (sin *cycle-x*)))))
     (loop for x from 0 to 20 do
          (loop for y from 0 to 15 do
-              (fiendish-rl.ffi::sdl-blit 0 0 16 16 (+ dx (* x 32)) (+ dy (* y 32)) 32 32))))
+              (fiendish-rl.ffi::sdl-blit 0 32 16 16 (+ dx (* x 32)) (+ dy (* y 32)) 32 32))))
   (incf *cycle-x* 0.1)
   (let ((x (round *text-draw-x*)))
     (fiendish-rl.ffi::draw-text *font* "This is a test! Can you read this?" 
@@ -35,7 +35,7 @@
                                 0 30 0 0 240 255)
     (fiendish-rl.ffi::draw-text *font* "abcdefghijklmnopqrstuvwxyz" 
                                 0 50 0 0 240 100)
-    (fiendish-rl.ffi::draw-text *font* "1234567890" 
+    (fiendish-rl.ffi::draw-text *font* "1234567890"
                                 0 70 0 0 240 255)
     (incf *text-draw-x* 0.5)
     (if (> *text-draw-x* (- 200 10))
@@ -46,8 +46,9 @@
         *draw-count* 0
         *font* 
         ;;(fiendish-rl.ffi::open-font "DroidSerif-Regular.ttf" 10))
-        (fiendish-rl.ffi::open-font "DroidSans-Bold.ttf" 16))
-  (fiendish-rl.ffi::sdl-set-texture-source "player1.png")
+        ;;(fiendish-rl.ffi::open-font "DroidSans-Bold.ttf" 16))
+        (fiendish-rl.ffi::open-font "DroidSansMono.ttf" 16))
+  (fiendish-rl.ffi::sdl-set-texture-source "sprites.png")
   (let ((running t))
     (loop while running do
          (destructuring-bind (result key mod) (fiendish-rl.ffi:pollevent)
@@ -61,7 +62,7 @@
          (elapsed-time (/ (- end-time-ms *startup-time-ms*) 1000.0))
          (average-fps (float (/ *draw-count* elapsed-time))))
     (format t "frames drawn = ~a~%" *draw-count*)
-    (format t "elapsed time = ~a~%" elapsed-time)
+    (format t "gameloop elapsed time = ~a~%" elapsed-time)
     (format t "average fps = ~a~%" average-fps)))
 
 (defun run ()
@@ -126,4 +127,4 @@
       (sdl2:destroy-texture *texture*)
       (sdl2-ffi.functions:sdl-destroy-renderer *renderer*)
       (sdl2:destroy-window win))))
-#|
+|#

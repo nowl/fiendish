@@ -65,7 +65,7 @@
 (defun init ()
   (use-foreign-library fiend)
   ;;(sdl-init "fiendish" 1280 720 320 200))
-  (sdl-init "fiendish" 1280 720 640 480))
+  (sdl-init "fiendish" 1280 720 640 360))
 
 (defun destroy ()
   (sdl-destroy)
