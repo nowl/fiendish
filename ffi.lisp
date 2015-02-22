@@ -13,10 +13,9 @@
   (logical-width :int)
   (logical-height :int))
 
-(defcfun ("set_texture_src" sdl-set-texture-source)
+(defcfun ("set_texture_src" set-texture-source)
     :void
   (image-filename :string))
-
 
 (defcfun ("sdl_draw" draw)
   :void)
@@ -27,7 +26,7 @@
 (defcfun ("sdl_getticks" getticks)
   :int32)
 
-(defcfun ("sdl_blit" sdl-blit)
+(defcfun ("sdl_blit" blit)
     :void
   (src-x :int)
   (src-y :int)
@@ -62,10 +61,10 @@
   (b :unsigned-char)
   (a :unsigned-char))
 
-(defun init ()
+(defun init (&rest args)
   (use-foreign-library fiend)
   ;;(sdl-init "fiendish" 1280 720 320 200))
-  (sdl-init "fiendish" 1280 720 640 360))
+  (apply #'sdl-init args))
 
 (defun destroy ()
   (sdl-destroy)
@@ -77,30 +76,9 @@
 (defun pollevent ()
   (let ((result (sdl-pollevent *keycode* *keymod*)))
     (if (= result 0)
-        (list 0 0 0)
-        (list result
+        (list nil 0 0)
+        (list (ecase result
+                (768 :press)
+                (769 :release))
               (mem-ref *keycode* :int32)
               (mem-ref *keymod* :uint16)))))
-       
-
-;;(use-foreign-library fiend)
-
-;;(sdl-init)
-;;(sdl-destroy)
-
-
-;;(close-foreign-library 'fiend)
-#|
-(sdl-init)
-(loop for x below 10 do
-     (loop for y below 10 do
-          (sdl-putchar x y (char-code #\@) 1.0 1.0 1.0 0.0 0.0 0.0)))
-
-(sdl-draw)
-(sdl-destroy)
-
-(sdl-pollevent *keycode* *keymod*)
-;;(format t "~a ~a~%" (mem-ref *keycode* :int32) (mem-ref *keymod* :uint16))
-
-(close-foreign-library 'fiend)
-|#

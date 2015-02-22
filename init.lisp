@@ -11,7 +11,7 @@
 
 (push #p"/home/nowl/dev/fiendish/" cffi:*foreign-library-directories*)
 
-(swank:set-package :fiendish-rl)
+;;(swank:set-package :fiendish-rl)
 
-(time (fiendish-rl::run))
+;;(time (fiendish-rl::run))
 

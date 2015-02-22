@@ -6,8 +6,12 @@
         :cffi)
   (:export init
            draw
+           clear
            getticks
-           putchar
+           set-texture-source
+           open-font
+           draw-text
+           blit
            pollevent
            destroy))
 
