@@ -11,6 +11,8 @@
   ((:file "package")
    (:file "core")
    (:file "ffi")
+   (:file "data")
+   (:file "drawing")
    (:file "game"))
   :serial t)
   

@@ -10,11 +10,8 @@
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
-(defparameter *text-draw-x* 0.0)
-
 (defparameter *font* nil)
 
-(defparameter *cycle-x* 0)
 (defparameter *running* t)
 
 (defparameter *keyboard-state* (make-hash-table))
@@ -25,24 +22,16 @@
   in-repeat
   time-pressed)
 
-(defstruct player-ship
-  x
-  y
-  dir
-  vel-x
-  vel-y
-  accel-x
-  accel-y
-  thrust)
-
-(defparameter *player-ship* (make-player-ship :x 100 :y 100 :dir :up :thrust 1.5 :vel-x 0 :vel-y 0 :accel-x 0 :accel-y 0))
-
 (defun move-player (dir)
   (ecase dir
-    (:up (setf (player-ship-accel-y *player-ship*) (- (player-ship-thrust *player-ship*))))
-    (:down (setf (player-ship-accel-y *player-ship*) (player-ship-thrust *player-ship*)))
-    (:left (setf (player-ship-accel-x *player-ship*) (- (player-ship-thrust *player-ship*))))
-    (:right (setf (player-ship-accel-x *player-ship*) (player-ship-thrust *player-ship*)))))
+    (:up (setf (player-ship-accel-y *player-ship*) (- (player-ship-thrust *player-ship*))
+               (player-ship-dir *player-ship*) :ship-up))
+    (:down (setf (player-ship-accel-y *player-ship*) (player-ship-thrust *player-ship*)
+                 (player-ship-dir *player-ship*) :ship-down))
+    (:left (setf (player-ship-accel-x *player-ship*) (- (player-ship-thrust *player-ship*))
+                 (player-ship-dir *player-ship*) :ship-left))
+    (:right (setf (player-ship-accel-x *player-ship*) (player-ship-thrust *player-ship*)
+                  (player-ship-dir *player-ship*) :ship-right))))
 
 (defun get-held-keys () )
 
@@ -57,28 +46,6 @@
                                                                          :time-pressed nil)))
               (handle-keypress value mod))
       (:release (setf (key-state-pressed kstate) nil)))))
-
-(defun draw ()
-  (let* ((rad 5)
-         (dx (round (* rad (cos *cycle-x*))))
-         (dy (round (* rad (sin *cycle-x*)))))
-    #+debug(loop for x from 0 to 20 do
-         (loop for y from 0 to 15 do
-              (fiendish-rl.ffi:blit 0 32 16 16 (+ dx (* x 32)) (+ dy (* y 32)) 32 32))))
-  (incf *cycle-x* 0.1)
-  (let ((x (round *text-draw-x*)))
-    (fiendish-rl.ffi:draw-text *font* "This is a test! Can you read this?" 
-                                0 10 0 0 240 255)
-    (fiendish-rl.ffi:draw-text *font* "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
-                                0 30 0 0 240 255)
-    (fiendish-rl.ffi:draw-text *font* "abcdefghijklmnopqrstuvwxyz" 
-                                0 50 0 0 240 100)
-    (fiendish-rl.ffi:draw-text *font* "1234567890"
-                                0 70 0 0 240 255)
-    (incf *text-draw-x* 0.5)
-    (if (> *text-draw-x* (- 200 10))
-        (setf *text-draw-x* 0)))
-  (fiendish-rl.ffi:blit 0 16 16 16 (round (player-ship-x *player-ship*)) (round (player-ship-y *player-ship*)) 32 32))
 
 (defun update ()
   (incf (player-ship-vel-x *player-ship*) (player-ship-accel-x *player-ship*))
@@ -96,8 +63,18 @@
     (setf (player-ship-vel-x *player-ship*) 0))
 
   (when (< (abs (player-ship-vel-y *player-ship*)) *epsilon*)
-    (setf (player-ship-vel-y *player-ship*) 0)))
+    (setf (player-ship-vel-y *player-ship*) 0))
 
+  (loop for d in *debris* do
+       (incf (debris-x d) (debris-dx d))
+       (incf (debris-y d) (debris-dy d)))
+  
+  (loop for c in *coins* do
+       (decf (coin-to-flip c))
+       (when (<= (coin-to-flip c) 0)
+         (setf (coin-to-flip c) 30)
+         (setf (coin-state c) (next-coin-state c)))))
+       
 
 (defun handle-keypress (key mod)
   (cond
@@ -145,6 +122,6 @@
     (format t "average fps = ~a~%" average-fps)))
 
 (defun run ()
-  (unwind-protect (progn (fiendish-rl.ffi:init "fiendish" 1280 720 640 360)
+  (unwind-protect (progn (fiendish-rl.ffi:init "fiendish" 1280 720 *screen-width* *screen-height*)
                          (gameloop))
     (fiendish-rl.ffi:destroy)))

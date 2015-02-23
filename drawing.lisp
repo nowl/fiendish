@@ -1,54 +1,43 @@
 (in-package :fiendish-rl)
 
-(defparameter *draw-color-fg-stack* nil)
+(defun blit (texture pos)
+  (let ((tex (texture-position texture)))
+    (destructuring-bind (tex-x tex-y) tex
+      (destructuring-bind (x y) pos
+        (fiendish-rl.ffi:blit tex-x tex-y 16 16 (round x) (round y) 32 32)))))
 
-(defparameter *draw-color-fg* (make-color :r 1.0 :g 1.0 :b 1.0))
-(defparameter *draw-color-bg* (make-color :r 0.0 :g 0.0 :b 0.0))
+(defun world-to-screen (x y)
+  (let ((ox (- (/ *screen-width* 2) 16))
+        (oy (- (/ *screen-height* 2) 16))
+        (dx (player-ship-x *player-ship*))
+        (dy (player-ship-y *player-ship*)))
+    (list (- (+ x ox) dx) (- (+ y oy) dy))))
 
-(defun putchar (char-or-code x y r g b)
-  (let ((char (etypecase char-or-code
-                (fixnum char-or-code)
-                (character (char-code char-or-code)))))
-    (fiendish-rl.ffi:putchar x y char
-                             (color-r *draw-color-fg*)
-                             (color-g *draw-color-fg*)
-                             (color-b *draw-color-fg*)
-                             (color-r *draw-color-bg*)
-                             (color-g *draw-color-bg*)
-                             (color-b *draw-color-bg*))))
+(defun within-screen (x y)
+  "Tests if the world coordinates x,y are within the screen. If so
+then return those screen coordinates, otherwise nil"
+  (destructuring-bind (sx sy) (world-to-screen x y)
+    (if (and (>= sx (- 0 32)) (>= sy (- 0 32)) (< sx *screen-width*) (< sy *screen-height*))
+        (list sx sy)
+        (list nil nil))))
 
-(defun draw-text (text start-col start-row end-col &key (draw-text t))
-  "Draw the text to the specified spot on the screen. Returns the
-number of rows the text took up."
-  (declare ((or string list) text)
-           (fixnum start-col start-row end-col))
-  (setf text (etypecase text
-               (string (compile-to-text-cmds text))
-               (list text)))
-  (loop with row = start-row with col = start-col for cmd in text do
-       (let ((cols-remaining (1+ (- end-col col))))
-         (when (<= (- cols-remaining (text-command-chars-to-break cmd)) 0)
-           (incf row)
-           (setf col start-col))
-         (ecase (text-command-type cmd)
-           (:char
-            (let ((the-char (text-command-data cmd)))
-              (unless (and (whitespacep the-char)
-                           (or
-                            ;; test condition of beginning of line and
-                            ;; it's a whitespace character
-                            (= col start-col)
-                            ;; text condition where we would draw a
-                            ;; whitespace character at the end of the
-                            ;; line
-                            (<= cols-remaining 0)))
-                (when draw-text
-                  (putchar the-char col row 
-                           (color-r *draw-color-fg*)
-                           (color-g *draw-color-fg*)
-                           (color-b *draw-color-fg*))
-                  (incf col)))))
-           (:color (push *draw-color-fg* *draw-color-fg-stack*)
-                   (setf *draw-color-fg* (car (text-command-data cmd))))
-           (:creset (setf *draw-color-fg* (pop *draw-color-fg-stack*)))))))
-  ;; TODO return number of rows drawn (1+ (- row start-row))))
+(defun draw ()
+  (loop for d in *debris* do
+       (destructuring-bind (sx sy) (within-screen (debris-x d) (debris-y d))
+         (when sx
+           (blit :debris (list sx sy)))))
+
+  (loop for c in *coins* do
+       (destructuring-bind (sx sy) (within-screen (coin-x c) (coin-y c))
+         (when sx
+           (blit (coin-state c) (list sx sy)))))
+  
+  (fiendish-rl.ffi:draw-text *font* "This is a test! Can you read this?" 
+                             0 10 0 0 240 255)
+  (fiendish-rl.ffi:draw-text *font* "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+                             0 30 0 0 240 255)
+  (fiendish-rl.ffi:draw-text *font* "abcdefghijklmnopqrstuvwxyz" 
+                             0 50 0 0 240 100)
+  (fiendish-rl.ffi:draw-text *font* "1234567890"
+                             0 70 0 0 240 255)
+  (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16))))
