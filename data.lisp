@@ -34,7 +34,8 @@
     (:debris '(96 0))
     (:coin1 '(16 0))
     (:coin2 '(32 0))
-    (:coin3 '(48 0))))
+    (:coin3 '(48 0))
+    (:player-fire '(64 0))))
 
 (defstruct debris
   x y
@@ -68,4 +69,19 @@
   (ecase (coin-state coin)
     (:coin1 :coin2)
     (:coin2 :coin3)
-    (:coin3 :coin1)))
+    (:coin3 :coin4)
+    (:coin4 :coin1)))
+
+(defun coin-state-to-image (coin)
+  (ecase (coin-state coin)
+    (:coin1 :coin1)
+    (:coin2 :coin2)
+    (:coin3 :coin3)
+    (:coin4 :coin2)))
+
+(defstruct player-fire
+  x y
+  dir)
+
+(defparameter *player-fire* nil)
+(defparameter *player-fire-speed* 15)

@@ -10,11 +10,12 @@
 (defparameter *draw-count* 0)
 (defparameter *startup-time-ms* 0)
 
-(defparameter *font* nil)
-
 (defparameter *running* t)
 
 (defparameter *keyboard-state* (make-hash-table))
+
+(defparameter *keyboard-initial-delay-ms* 60)
+(defparameter *keyboard-repeat-delay-ms* 60)
 
 (defstruct key-state
   mod
@@ -33,21 +34,62 @@
     (:right (setf (player-ship-accel-x *player-ship*) (player-ship-thrust *player-ship*)
                   (player-ship-dir *player-ship*) :ship-right))))
 
-(defun get-held-keys () )
+(defun player-fire ()
+  (let ((dir (player-ship-dir *player-ship*)))
+    (push (make-player-fire :x (player-ship-x *player-ship*) :y (player-ship-y *player-ship*) :dir dir)
+          *player-fire*)))    
+
+(defun update-player-fire ()
+  (let (delete-list)
+    (loop for fire in *player-fire* do
+         (ecase (player-fire-dir fire)
+           (:ship-up (incf (player-fire-y fire) (- *player-fire-speed*)))
+           (:ship-down (incf (player-fire-y fire) *player-fire-speed*))
+           (:ship-left (incf (player-fire-x fire) (- *player-fire-speed*)))
+           (:ship-right (incf (player-fire-x fire) *player-fire-speed*)))
+         (destructuring-bind (sx sy) (within-screen (player-fire-x fire) (player-fire-y fire))
+           (declare (ignore sy))
+           (when (not sx)
+             (push fire delete-list))))
+    (loop for d in delete-list do
+         (setf *player-fire* (delete d *player-fire* :test #'eq)))))
+
+(defun get-held-keys ()
+  (let (results)
+    (loop with tick = (fiendish-rl.ffi:getticks)
+       for key being the hash-key of *keyboard-state* using (hash-value key-state) do
+         (when (key-state-pressed key-state)
+           (cond
+             ((and (key-state-in-repeat key-state) 
+                   (>= (- tick (key-state-time-pressed key-state)) *keyboard-repeat-delay-ms*))
+              (push (list key (key-state-mod key-state)) results)
+              (setf (key-state-time-pressed key-state) tick))
+             ((and (not (key-state-in-repeat key-state))
+                   (>= (- tick (key-state-time-pressed key-state)) *keyboard-initial-delay-ms*))
+              (push (list key (key-state-mod key-state)) results)
+              (setf (key-state-time-pressed key-state) tick
+                    (key-state-in-repeat key-state) t)))))
+    results))
 
 (defun keyboard-update (type value mod)
   (let ((kstate (gethash value *keyboard-state*)))
     (ecase type
-      (:press (if kstate
-                  (setf (key-state-pressed kstate) t)
-                  (setf (gethash value *keyboard-state*) (make-key-state :mod mod
-                                                                         :pressed t
-                                                                         :in-repeat nil
-                                                                         :time-pressed nil)))
+      (:press (cond
+                ((and kstate (key-state-pressed kstate)) (return-from keyboard-update nil))
+                (kstate (setf (key-state-pressed kstate) t
+                              (key-state-time-pressed kstate) (fiendish-rl.ffi:getticks)
+                              (key-state-in-repeat kstate) nil))
+                (t (setf (gethash value *keyboard-state*) (make-key-state :mod mod
+                                                                          :pressed t
+                                                                          :in-repeat nil
+                                                                          :time-pressed (fiendish-rl.ffi:getticks)))))
               (handle-keypress value mod))
       (:release (setf (key-state-pressed kstate) nil)))))
 
 (defun update ()
+  (loop for key-mod in (get-held-keys) do
+       (apply #'handle-keypress key-mod))
+
   (incf (player-ship-vel-x *player-ship*) (player-ship-accel-x *player-ship*))
   (incf (player-ship-vel-y *player-ship*) (player-ship-accel-y *player-ship*))
 
@@ -73,7 +115,9 @@
        (decf (coin-to-flip c))
        (when (<= (coin-to-flip c) 0)
          (setf (coin-to-flip c) 30)
-         (setf (coin-state c) (next-coin-state c)))))
+         (setf (coin-state c) (next-coin-state c))))
+
+  (update-player-fire))
        
 
 (defun handle-keypress (key mod)
@@ -82,7 +126,8 @@
     ((= key (char-code #\d)) (move-player :right))
     ((= key (char-code #\a)) (move-player :left))
     ((= key (char-code #\w)) (move-player :up))
-    ((= key (char-code #\s)) (move-player :down))))  
+    ((= key (char-code #\s)) (move-player :down))
+    ((= key (char-code #\space)) (player-fire))))
 
 (defun gameloop ()
   (setf *startup-time-ms* (fiendish-rl.ffi:getticks)

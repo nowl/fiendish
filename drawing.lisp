@@ -1,5 +1,7 @@
 (in-package :fiendish-rl)
 
+(defparameter *font* nil)
+
 (defun blit (texture pos)
   (let ((tex (texture-position texture)))
     (destructuring-bind (tex-x tex-y) tex
@@ -30,7 +32,7 @@ then return those screen coordinates, otherwise nil"
   (loop for c in *coins* do
        (destructuring-bind (sx sy) (within-screen (coin-x c) (coin-y c))
          (when sx
-           (blit (coin-state c) (list sx sy)))))
+           (blit (coin-state-to-image c) (list sx sy)))))
   
   (fiendish-rl.ffi:draw-text *font* "This is a test! Can you read this?" 
                              0 10 0 0 240 255)
@@ -40,4 +42,9 @@ then return those screen coordinates, otherwise nil"
                              0 50 0 0 240 100)
   (fiendish-rl.ffi:draw-text *font* "1234567890"
                              0 70 0 0 240 255)
-  (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16))))
+  (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16)))
+
+  (loop for f in *player-fire* do
+       (destructuring-bind (sx sy) (within-screen (player-fire-x f) (player-fire-y f))
+         (when sx
+           (blit :player-fire (list sx sy))))))
