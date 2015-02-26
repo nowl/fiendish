@@ -11,9 +11,10 @@
   vel-y
   accel-x
   accel-y
-  thrust)
+  thrust
+  last-fired-time)
 
-(defparameter *player-ship* (make-player-ship :x 0 :y 0 :dir :ship-up :thrust 1.5 :vel-x 0 :vel-y 0 :accel-x 0 :accel-y 0))
+(defparameter *player-ship* (make-player-ship :x 0 :y 0 :dir :ship-up :thrust 1.5 :vel-x 0 :vel-y 0 :accel-x 0 :accel-y 0 :last-fired-time 0))
 
 #|
 (defun ship-orientation ()
@@ -35,21 +36,15 @@
     (:coin1 '(16 0))
     (:coin2 '(32 0))
     (:coin3 '(48 0))
-    (:player-fire '(64 0))))
+    (:player-fire '(64 0))
+    (:enemy-ship1 '(0 0))
+    (:enemy-ship2 '(0 32))))
 
 (defstruct debris
   x y
   dx dy)
 
 (defparameter *debris* nil)
-
-(loop with span = 5000 for i below 1000 do
-     (push (make-debris :x (- (random span) (/ span 2))
-                        :y (- (random span) (/ span 2))
-                        :dx (- (random 2.0) 1)
-                        :dy (- (random 2.0) 1))
-           *debris*))
-
 
 (defstruct coin
   x y
@@ -85,3 +80,17 @@
 
 (defparameter *player-fire* nil)
 (defparameter *player-fire-speed* 15)
+(defparameter *player-fire-repeat-ms* 200)
+
+(defstruct enemy-ship
+  x y
+  type
+  behavior)
+
+(defparameter *enemy-ships* nil)
+
+(defparameter *next-debris-check* 0)
+(defparameter *debris-check-ms* 100)
+
+(defparameter *next-debris-delete-check* 0)
+(defparameter *debris-delete-check-ms* 10000)

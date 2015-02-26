@@ -35,9 +35,15 @@
                   (player-ship-dir *player-ship*) :ship-right))))
 
 (defun player-fire ()
-  (let ((dir (player-ship-dir *player-ship*)))
-    (push (make-player-fire :x (player-ship-x *player-ship*) :y (player-ship-y *player-ship*) :dir dir)
-          *player-fire*)))    
+  (symbol-macrolet ((last-fire (player-ship-last-fired-time *player-ship*)))
+    (let ((tick (fiendish-rl.ffi:getticks))
+          (dir (player-ship-dir *player-ship*)))
+      (when (> tick (+ last-fire *player-fire-repeat-ms*))
+        (setf last-fire tick)
+        (push (make-player-fire :x (player-ship-x *player-ship*)
+                                :y (player-ship-y *player-ship*)
+                                :dir dir)
+              *player-fire*)))))
 
 (defun update-player-fire ()
   (let (delete-list)
@@ -86,7 +92,31 @@
               (handle-keypress value mod))
       (:release (setf (key-state-pressed kstate) nil)))))
 
-(defun update ()
+(defun maybe-make-debris (tick)
+  (when (and (> tick *next-debris-check*) (< (length *debris*) 50))
+    (incf *next-debris-check* *debris-check-ms*)
+    (let ((ix (player-ship-x *player-ship*))
+          (iy (player-ship-y *player-ship*))
+          (r *screen-width*)
+          (angle (random (* 2 pi))))
+    (push (make-debris :x (+ ix (* r (cos angle)))
+                       :y (+ iy (* r (sin angle)))
+                       :dx (- (random 2.0) 1)
+                       :dy (- (random 2.0) 1))
+          *debris*))))
+
+(defun maybe-delete-debris (tick)
+  (when (> tick *next-debris-delete-check*)
+    (incf *next-debris-delete-check* *debris-delete-check-ms*)
+    (let ((ix (player-ship-x *player-ship*))
+          (iy (player-ship-y *player-ship*)))
+      (setf *debris* (delete-if #'(lambda (d)
+                                    (> (+ (expt (- ix (debris-x d)) 2)
+                                          (expt (- iy (debris-y d)) 2))
+                                       (expt (* *screen-width* 3) 2)))
+                                *debris*)))))
+
+(defun update (tick)
   (loop for key-mod in (get-held-keys) do
        (apply #'handle-keypress key-mod))
 
@@ -117,7 +147,9 @@
          (setf (coin-to-flip c) 30)
          (setf (coin-state c) (next-coin-state c))))
 
-  (update-player-fire))
+  (update-player-fire)
+  (maybe-make-debris tick)
+  (maybe-delete-debris tick))
        
 
 (defun handle-keypress (key mod)
@@ -134,7 +166,10 @@
         *draw-count* 0
         *font* (fiendish-rl.ffi:open-font "DroidSansMono.ttf" 12)
         *next-tick-ms* 0
-        *running* t)
+        *running* t
+        (player-ship-last-fired-time *player-ship*) 0
+        *next-debris-check* 0
+        *next-debris-delete-check* 0)
   (clrhash *keyboard-state*)
 
   (fiendish-rl.ffi:set-texture-source "sprites.png")
@@ -150,7 +185,7 @@
                     (return))))                  
            
          (loop while (and (>= tick *next-tick-ms*) (< frame-skip *max-frame-skip*)) do
-              (update)
+              (update (fiendish-rl.ffi:getticks))
               (incf *next-tick-ms* *ms-per-tick*)
               (incf frame-skip))
          
