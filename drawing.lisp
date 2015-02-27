@@ -8,22 +8,29 @@
       (destructuring-bind (x y) pos
         (fiendish-rl.ffi:blit tex-x tex-y 16 16 (round x) (round y) 32 32)))))
 
-(defun world-to-screen (x y)
+(defun world-to-screen (x y &key (mod 1))
   (let ((ox (- (/ *screen-width* 2) 16))
         (oy (- (/ *screen-height* 2) 16))
         (dx (player-ship-x *player-ship*))
         (dy (player-ship-y *player-ship*)))
-    (list (- (+ x ox) dx) (- (+ y oy) dy))))
+    (list (+ x (* (- ox dx) mod)) (+ y (* (- oy dy) mod)))))
 
-(defun within-screen (x y)
+(defun within-screen (x y &rest args)
   "Tests if the world coordinates x,y are within the screen. If so
 then return those screen coordinates, otherwise nil"
-  (destructuring-bind (sx sy) (world-to-screen x y)
+  (destructuring-bind (sx sy) (apply #'world-to-screen x y args)
     (if (and (>= sx (- 0 32)) (>= sy (- 0 32)) (< sx *screen-width*) (< sy *screen-height*))
         (list sx sy)
         (list nil nil))))
 
 (defun draw ()
+  (loop for s in *stars* do
+       (destructuring-bind (sx sy) (within-screen (star-x s)
+                                                  (star-y s)
+                                                  :mod #+deb(star-dist s) 0.2)
+         (when sx
+           (blit :player-fire (list sx sy)))))
+
   (loop for d in *debris* do
        (destructuring-bind (sx sy) (within-screen (debris-x d) (debris-y d))
          (when sx

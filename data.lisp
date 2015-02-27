@@ -92,5 +92,14 @@
 (defparameter *next-debris-check* 0)
 (defparameter *debris-check-ms* 100)
 
-(defparameter *next-debris-delete-check* 0)
-(defparameter *debris-delete-check-ms* 10000)
+(defstruct star
+  x y
+  dist)
+
+(defparameter *stars* nil)
+(defparameter *star-extents* 200)
+(loop with span = *star-extents* for i below 100 do
+     (push (make-star :x (- (random span) (/ span 2))
+                      :y (- (random span) (/ span 2))
+                      :dist (random 0.1))
+           *stars*))

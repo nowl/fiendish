@@ -105,17 +105,6 @@
                        :dy (- (random 2.0) 1))
           *debris*))))
 
-(defun maybe-delete-debris (tick)
-  (when (> tick *next-debris-delete-check*)
-    (incf *next-debris-delete-check* *debris-delete-check-ms*)
-    (let ((ix (player-ship-x *player-ship*))
-          (iy (player-ship-y *player-ship*)))
-      (setf *debris* (delete-if #'(lambda (d)
-                                    (> (+ (expt (- ix (debris-x d)) 2)
-                                          (expt (- iy (debris-y d)) 2))
-                                       (expt (* *screen-width* 3) 2)))
-                                *debris*)))))
-
 (defun update (tick)
   (loop for key-mod in (get-held-keys) do
        (apply #'handle-keypress key-mod))
@@ -139,7 +128,14 @@
 
   (loop for d in *debris* do
        (incf (debris-x d) (debris-dx d))
-       (incf (debris-y d) (debris-dy d)))
+       (incf (debris-y d) (debris-dy d))
+
+       (let ((ix (player-ship-x *player-ship*))
+             (iy (player-ship-y *player-ship*)))
+         (when (> (+ (expt (- ix (debris-x d)) 2)
+                     (expt (- iy (debris-y d)) 2))
+                  (expt (* *screen-width* 3) 2))
+           (setf *debris* (delete d *debris*)))))
   
   (loop for c in *coins* do
        (decf (coin-to-flip c))
@@ -148,8 +144,7 @@
          (setf (coin-state c) (next-coin-state c))))
 
   (update-player-fire)
-  (maybe-make-debris tick)
-  (maybe-delete-debris tick))
+  (maybe-make-debris tick))
        
 
 (defun handle-keypress (key mod)
@@ -168,8 +163,7 @@
         *next-tick-ms* 0
         *running* t
         (player-ship-last-fired-time *player-ship*) 0
-        *next-debris-check* 0
-        *next-debris-delete-check* 0)
+        *next-debris-check* 0)
   (clrhash *keyboard-state*)
 
   (fiendish-rl.ffi:set-texture-source "sprites.png")
