@@ -97,9 +97,14 @@
   dist)
 
 (defparameter *stars* nil)
-(defparameter *star-extents* 200)
+(defparameter *star-extents* 2000)
+
+(defun player-sector ()
+  (list (floor (/ (* 0.2 (player-ship-x *player-ship*)) *star-extents*))
+        (floor (/ (* 0.2 (player-ship-y *player-ship*)) *star-extents*))))
+
 (loop with span = *star-extents* for i below 100 do
-     (push (make-star :x (- (random span) (/ span 2))
-                      :y (- (random span) (/ span 2))
+     (push (make-star :x (random span)
+                      :y (random span)
                       :dist (random 0.1))
            *stars*))

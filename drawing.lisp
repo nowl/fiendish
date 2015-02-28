@@ -25,11 +25,15 @@ then return those screen coordinates, otherwise nil"
 
 (defun draw ()
   (loop for s in *stars* do
-       (destructuring-bind (sx sy) (within-screen (star-x s)
-                                                  (star-y s)
-                                                  :mod #+deb(star-dist s) 0.2)
-         (when sx
-           (blit :player-fire (list sx sy)))))
+       (destructuring-bind (sect-x sect-y) (player-sector)
+         (loop for combos in '((-1 -1) (-1 0) (-1 1) (0 -1) (0 0) (0 1) (1 -1) (1 0) (1 1)) do
+              (let ((sx (+ (* *star-extents* (+ (first combos) sect-x)) (star-x s)))
+                    (sy (+ (* *star-extents* (+ (second combos) sect-y)) (star-y s))))
+                (destructuring-bind (sx sy) (within-screen sx
+                                                           sy
+                                                           :mod #+deb(star-dist s) 0.2)
+                  (when sx
+                    (blit :player-fire (list sx sy))))))))
 
   (loop for d in *debris* do
        (destructuring-bind (sx sy) (within-screen (debris-x d) (debris-y d))
@@ -41,15 +45,17 @@ then return those screen coordinates, otherwise nil"
          (when sx
            (blit (coin-state-to-image c) (list sx sy)))))
   
-  (fiendish-rl.ffi:draw-text *font* "This is a test! Can you read this?" 
-                             0 10 0 0 240 255)
-  (fiendish-rl.ffi:draw-text *font* "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
-                             0 30 0 0 240 255)
-  (fiendish-rl.ffi:draw-text *font* "abcdefghijklmnopqrstuvwxyz" 
-                             0 50 0 0 240 100)
-  (fiendish-rl.ffi:draw-text *font* "1234567890"
-                             0 70 0 0 240 255)
+  (when (< (fiendish-rl.ffi:getticks) 5000)
+    (fiendish-rl.ffi:draw-text *font* "Welcome to SS Fiend." 
+                               0 10 0 0 240 255)
+    (fiendish-rl.ffi:draw-text *font* "W,A,S,D to move around, Spacebar to shoot." 
+                               0 30 0 0 240 255)
+    (fiendish-rl.ffi:draw-text *font* "Good luck!" 
+                               0 50 0 0 240 100))
   (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16)))
+
+  (fiendish-rl.ffi:draw-text *font* (format nil "Sector: ~a" (player-sector))
+                             0 10 0 200 0 255)
 
   (loop for f in *player-fire* do
        (destructuring-bind (sx sy) (within-screen (player-fire-x f) (player-fire-y f))
