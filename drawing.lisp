@@ -33,7 +33,7 @@ then return those screen coordinates, otherwise nil"
                                                            sy
                                                            :mod #+deb(star-dist s) 0.2)
                   (when sx
-                    (blit :player-fire (list sx sy))))))))
+                    (blit :star (list sx sy))))))))
 
   (loop for d in *debris* do
        (destructuring-bind (sx sy) (within-screen (debris-x d) (debris-y d))
@@ -47,15 +47,23 @@ then return those screen coordinates, otherwise nil"
   
   (when (< (fiendish-rl.ffi:getticks) 5000)
     (fiendish-rl.ffi:draw-text *font* "Welcome to SS Fiend." 
-                               0 10 0 0 240 255)
+                               0 10 0 50 240 255)
     (fiendish-rl.ffi:draw-text *font* "W,A,S,D to move around, Spacebar to shoot." 
-                               0 30 0 0 240 255)
+                               0 30 0 50 240 255)
     (fiendish-rl.ffi:draw-text *font* "Good luck!" 
-                               0 50 0 0 240 100))
+                               0 50 0 50 240 100))
   (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16)))
 
-  (fiendish-rl.ffi:draw-text *font* (format nil "Sector: ~a" (player-sector))
-                             0 10 0 200 0 255)
+;;   (fiendish-rl.ffi:draw-text *font* (format nil "Sector: ~a" (player-sector))
+;;                              0 10 0 200 0 255)
+
+  (loop for s in *enemy-ships* do
+       (destructuring-bind (sx sy) (within-screen (enemy-ship-x s) (enemy-ship-y s))
+         (when sx
+           (blit (ecase (enemy-ship-type s)
+                   (0 :enemy-ship1)
+                   (1 :enemy-ship2))
+                 (list sx sy)))))
 
   (loop for f in *player-fire* do
        (destructuring-bind (sx sy) (within-screen (player-fire-x f) (player-fire-y f))

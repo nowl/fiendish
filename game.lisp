@@ -60,6 +60,19 @@
     (loop for d in delete-list do
          (setf *player-fire* (delete d *player-fire* :test #'eq)))))
 
+(defun update-enemy-ships ()
+  (let (delete-list)
+    (loop for s in *enemy-ships* do
+         (funcall (enemy-ship-behavior s) s)
+         (incf (enemy-ship-x s) (enemy-ship-dx s))
+         (incf (enemy-ship-y s) (enemy-ship-dy s))
+  
+         (when (> (manhattan-dist-to-player (enemy-ship-x s) (enemy-ship-y s))
+                  (* 2 *screen-width*))
+           (push s delete-list)))
+    (loop for d in delete-list do
+         (setf *enemy-ships* (delete d *enemy-ships* :test #'eq)))))
+
 (defun get-held-keys ()
   (let (results)
     (loop with tick = (fiendish-rl.ffi:getticks)
@@ -105,6 +118,21 @@
                        :dy (- (random 2.0) 1))
           *debris*))))
 
+(defun maybe-make-enemy-ship (tick)
+  (when (> tick *next-enemy-ship-check*)
+    (incf *next-enemy-ship-check* *enemy-ship-check-ms*)
+    (let ((ix (player-ship-x *player-ship*))
+          (iy (player-ship-y *player-ship*))
+          (r *screen-width*)
+          (angle (random (* 2 pi))))
+    (push (make-enemy-ship :x (+ ix (* r (cos angle)))
+                           :y (+ iy (* r (sin angle)))
+                           :dx 0
+                           :dy 0
+                           :type (random 2)
+                           :behavior #'ship-move-towards-player)
+          *enemy-ships*))))
+
 (defun update (tick)
   (loop for key-mod in (get-held-keys) do
        (apply #'handle-keypress key-mod))
@@ -132,9 +160,9 @@
 
        (let ((ix (player-ship-x *player-ship*))
              (iy (player-ship-y *player-ship*)))
-         (when (> (+ (expt (- ix (debris-x d)) 2)
-                     (expt (- iy (debris-y d)) 2))
-                  (expt (* *screen-width* 3) 2))
+         (when (> (+ (abs (- ix (debris-x d)))
+                     (abs (- iy (debris-y d))))
+                  (* *screen-width* 3))
            (setf *debris* (delete d *debris*)))))
   
   (loop for c in *coins* do
@@ -144,7 +172,9 @@
          (setf (coin-state c) (next-coin-state c))))
 
   (update-player-fire)
-  (maybe-make-debris tick))
+  (update-enemy-ships)
+  (maybe-make-debris tick)
+  (maybe-make-enemy-ship tick))
        
 
 (defun handle-keypress (key mod)
@@ -163,7 +193,8 @@
         *next-tick-ms* 0
         *running* t
         (player-ship-last-fired-time *player-ship*) 0
-        *next-debris-check* 0)
+        *next-debris-check* 0
+        *next-enemy-ship-check* 0)
   (clrhash *keyboard-state*)
 
   (fiendish-rl.ffi:set-texture-source "sprites.png")

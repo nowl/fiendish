@@ -38,7 +38,8 @@
     (:coin3 '(48 0))
     (:player-fire '(64 0))
     (:enemy-ship1 '(0 0))
-    (:enemy-ship2 '(0 32))))
+    (:enemy-ship2 '(0 32))
+    (:star '(16 32))))
 
 (defstruct debris
   x y
@@ -84,10 +85,14 @@
 
 (defstruct enemy-ship
   x y
+  dx dy
   type
   behavior)
 
 (defparameter *enemy-ships* nil)
+(defparameter *next-enemy-ship-check* 0)
+(defparameter *enemy-ship-check-ms* 250)
+
 
 (defparameter *next-debris-check* 0)
 (defparameter *debris-check-ms* 100)
@@ -97,7 +102,7 @@
   dist)
 
 (defparameter *stars* nil)
-(defparameter *star-extents* 2000)
+(defparameter *star-extents* 1000)
 
 (defun player-sector ()
   (list (floor (/ (* 0.2 (player-ship-x *player-ship*)) *star-extents*))
@@ -108,3 +113,18 @@
                       :y (random span)
                       :dist (random 0.1))
            *stars*))
+
+(defun ship-move-towards-player (enemy)
+  (let ((d (ecase (enemy-ship-type enemy)
+             (0 2)
+             (1 1))))
+    (setf (enemy-ship-dx enemy) 
+          (if (> (player-ship-x *player-ship*) (enemy-ship-x enemy))
+              d (- d))
+          (enemy-ship-dy enemy) 
+          (if (> (player-ship-y *player-ship*) (enemy-ship-y enemy))
+              d (- d)))))
+
+(defun manhattan-dist-to-player (x y)
+  (+ (abs (- x (player-ship-x *player-ship*)))
+     (abs (- y (player-ship-y *player-ship*)))))
