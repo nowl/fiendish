@@ -133,6 +133,24 @@
                            :behavior #'ship-move-towards-player)
           *enemy-ships*))))
 
+(defun test-collisions ()
+  ;; player vs debris
+  (loop for d in *debris* do
+       (when (aabb-overlap (+ 8 (player-ship-x *player-ship*)) (+ 8 (player-ship-y *player-ship*))
+                           7 7
+                           (+ 8 (debris-x d)) (+ 8 (debris-y d))
+                           7 7)
+         (setf *debris* (delete d *debris*))))
+  ;; fire vs enemy ship
+  (loop for s in *enemy-ships* do
+       (loop for f in *player-fire* do
+            (when (aabb-overlap (+ 8 (player-fire-x f)) (+ 8 (player-fire-y f))
+                                3 3
+                                (+ 8 (enemy-ship-x s)) (+ 8 (enemy-ship-y s))
+                                7 7)
+              (setf *enemy-ships* (delete s *enemy-ships*))
+              (setf *player-fire* (delete f *player-fire*))))))
+
 (defun update (tick)
   (loop for key-mod in (get-held-keys) do
        (apply #'handle-keypress key-mod))
@@ -174,10 +192,12 @@
   (update-player-fire)
   (update-enemy-ships)
   (maybe-make-debris tick)
-  (maybe-make-enemy-ship tick))
+  (maybe-make-enemy-ship tick)
+  (test-collisions))
        
 
 (defun handle-keypress (key mod)
+  (declare (ignore mod))
   (cond
     ((= key (char-code #\escape)) (setf *running* nil))
     ((= key (char-code #\d)) (move-player :right))

@@ -116,8 +116,8 @@
 
 (defun ship-move-towards-player (enemy)
   (let ((d (ecase (enemy-ship-type enemy)
-             (0 2)
-             (1 1))))
+             (0 0.5)
+             (1 0.25))))
     (setf (enemy-ship-dx enemy) 
           (if (> (player-ship-x *player-ship*) (enemy-ship-x enemy))
               d (- d))
@@ -128,3 +128,9 @@
 (defun manhattan-dist-to-player (x y)
   (+ (abs (- x (player-ship-x *player-ship*)))
      (abs (- y (player-ship-y *player-ship*)))))
+
+(defun aabb-overlap (c1x c1y r1x r1y c2x c2y r2x r2y)
+  (cond
+    ((> (abs (- c1x c2x)) (+ r1x r2x)) nil)
+    ((> (abs (- c1y c2y)) (+ r1y r2y)) nil)
+    (t t)))
