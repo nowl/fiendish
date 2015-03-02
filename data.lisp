@@ -86,12 +86,13 @@
 (defstruct enemy-ship
   x y
   dx dy
+  accx accy
   type
   behavior)
 
 (defparameter *enemy-ships* nil)
 (defparameter *next-enemy-ship-check* 0)
-(defparameter *enemy-ship-check-ms* 250)
+(defparameter *enemy-ship-check-ms* 500)
 
 
 (defparameter *next-debris-check* 0)
@@ -116,14 +117,31 @@
 
 (defun ship-move-towards-player (enemy)
   (let ((d (ecase (enemy-ship-type enemy)
-             (0 0.5)
-             (1 0.25))))
-    (setf (enemy-ship-dx enemy) 
+             (0 0.04)
+             (1 0.02))))
+    (setf (enemy-ship-accx enemy) 
           (if (> (player-ship-x *player-ship*) (enemy-ship-x enemy))
               d (- d))
-          (enemy-ship-dy enemy) 
+          (enemy-ship-accy enemy) 
           (if (> (player-ship-y *player-ship*) (enemy-ship-y enemy))
               d (- d)))))
+
+(defun cutoff-player-x (enemy)
+  (let ((d (ecase (enemy-ship-type enemy)
+             (0 0.1)
+             (1 0.05))))
+    (setf (enemy-ship-accx enemy) 
+          (if (> (player-ship-x *player-ship*) (enemy-ship-x enemy))
+              d (- d)))))
+
+(defun cutoff-player-y (enemy)
+  (let ((d (ecase (enemy-ship-type enemy)
+             (0 0.1)
+             (1 0.05))))
+    (setf (enemy-ship-accy enemy) 
+          (if (> (player-ship-y *player-ship*) (enemy-ship-y enemy))
+              d (- d)))))
+
 
 (defun manhattan-dist-to-player (x y)
   (+ (abs (- x (player-ship-x *player-ship*)))

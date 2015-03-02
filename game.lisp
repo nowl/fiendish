@@ -129,8 +129,13 @@
                            :y (+ iy (* r (sin angle)))
                            :dx 0
                            :dy 0
+                           :accx 0
+                           :accy 0
                            :type (random 2)
-                           :behavior #'ship-move-towards-player)
+                           :behavior (ecase (random 3)
+                                       (0 #'ship-move-towards-player)
+                                       (1 #'cutoff-player-x)
+                                       (2 #'cutoff-player-y)))
           *enemy-ships*))))
 
 (defun test-collisions ()
@@ -151,10 +156,7 @@
               (setf *enemy-ships* (delete s *enemy-ships*))
               (setf *player-fire* (delete f *player-fire*))))))
 
-(defun update (tick)
-  (loop for key-mod in (get-held-keys) do
-       (apply #'handle-keypress key-mod))
-
+(defun player-position-update ()
   (incf (player-ship-vel-x *player-ship*) (player-ship-accel-x *player-ship*))
   (incf (player-ship-vel-y *player-ship*) (player-ship-accel-y *player-ship*))
 
@@ -170,7 +172,35 @@
     (setf (player-ship-vel-x *player-ship*) 0))
 
   (when (< (abs (player-ship-vel-y *player-ship*)) *epsilon*)
-    (setf (player-ship-vel-y *player-ship*) 0))
+    (setf (player-ship-vel-y *player-ship*) 0)))
+
+(defun enemy-position-update (e)
+  (incf (enemy-ship-dx e) (enemy-ship-accx e))
+  (incf (enemy-ship-dy e) (enemy-ship-accy e))
+
+  (incf (enemy-ship-x e) (enemy-ship-dx e))
+  (incf (enemy-ship-y e) (enemy-ship-dy e))
+
+  (setf (enemy-ship-accx e) 0
+        (enemy-ship-accy e) 0
+        (enemy-ship-dx e) (* 0.95 (enemy-ship-dx e))
+        (enemy-ship-dy e) (* 0.95 (enemy-ship-dy e)))
+
+  (when (< (abs (enemy-ship-dx e)) *epsilon*)
+    (setf (enemy-ship-dx e) 0))
+
+  (when (< (abs (enemy-ship-dy e)) *epsilon*)
+    (setf (enemy-ship-dy e) 0)))
+
+
+(defun update (tick)
+  (loop for key-mod in (get-held-keys) do
+       (apply #'handle-keypress key-mod))
+
+  (player-position-update)
+
+  (loop for e in *enemy-ships* do
+       (enemy-position-update e))
 
   (loop for d in *debris* do
        (incf (debris-x d) (debris-dx d))
