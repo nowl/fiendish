@@ -45,12 +45,12 @@ then return those screen coordinates, otherwise nil"
          (when sx
            (blit (coin-state-to-image c) (list sx sy)))))
   
-  (when (< (fiendish-rl.ffi:getticks) 5000)
-    (fiendish-rl.ffi:draw-text *font* "Welcome to SS Fiend." 
+  (when (< (fiendish-rl.ffi:getticks) 15000)
+    (fiendish-rl.ffi:draw-text *font* "Welcome to Space Runner." 
                                0 10 0 50 240 255)
-    (fiendish-rl.ffi:draw-text *font* "W,A,S,D to move around, Spacebar to shoot." 
+    (fiendish-rl.ffi:draw-text *font* "W,A,S,D to move around. You'll figure out the rest." 
                                0 30 0 50 240 255)
-    (fiendish-rl.ffi:draw-text *font* "Good luck!" 
+    (fiendish-rl.ffi:draw-text *font* "Hint: dodge well. Good luck!" 
                                0 50 0 50 240 100))
   (blit (player-ship-dir *player-ship*) (list (- (/ *screen-width* 2) 16) (- (/ *screen-height* 2) 16)))
 
@@ -68,4 +68,9 @@ then return those screen coordinates, otherwise nil"
   (loop for f in *player-fire* do
        (destructuring-bind (sx sy) (within-screen (player-fire-x f) (player-fire-y f))
          (when sx
-           (blit :player-fire (list sx sy))))))
+           (blit :player-fire (list sx sy)))))
+    
+  (fiendish-rl.ffi:draw-text *font* (format nil "Score: ~d" *score*)
+                             250 10 (if (= *score* 0) 255 20) 50 (if (= *score* 0) 0 240) 0)
+  (fiendish-rl.ffi:draw-text *font* (format nil "Max Score: ~d" *max-score*)
+                             400 10 190 150 60 0))

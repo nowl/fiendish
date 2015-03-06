@@ -8,7 +8,7 @@ CFLAGS := -pipe -O2 -Wall \
 	-fPIC
 
 TEST_BIN := libfiendish.so
-TEST_LIBS := `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lpthread -shared
+TEST_LIBS := `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lpthread -shared
 
 TEST_OBJ = \
 	sdl.o

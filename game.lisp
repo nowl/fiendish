@@ -17,6 +17,11 @@
 (defparameter *keyboard-initial-delay-ms* 60)
 (defparameter *keyboard-repeat-delay-ms* 60)
 
+(defparameter *fire-sound* nil)
+(defparameter *destroy-sound* nil)
+(defparameter *score* 0)
+(defparameter *max-score* 0)
+
 (defstruct key-state
   mod
   pressed
@@ -39,6 +44,7 @@
                  (:left :ship-left)
                  (:right :ship-right))))
       (when (> tick (+ last-fire *player-fire-repeat-ms*))
+        (fiendish-rl.ffi:play-sound *fire-sound*)
         (setf last-fire tick
               (player-ship-dir *player-ship*) dir)
         (push (make-player-fire :x (player-ship-x *player-ship*)
@@ -132,12 +138,16 @@
                            :dy 0
                            :accx 0
                            :accy 0
+                           :lifetime (fiendish-rl.ffi:getticks)
                            :type (random 2)
                            :behavior (ecase (random 3)
                                        (0 #'ship-move-towards-player)
                                        (1 #'cutoff-player-x)
                                        (2 #'cutoff-player-y)))
           *enemy-ships*))))
+
+(defun how-old-is-ship (enemy-ship)
+  (- (fiendish-rl.ffi:getticks) (enemy-ship-lifetime enemy-ship)))
 
 (defun test-collisions ()
   ;; player vs debris
@@ -146,7 +156,17 @@
                            7 7
                            (+ 8 (debris-x d)) (+ 8 (debris-y d))
                            7 7)
-         (setf *debris* (delete d *debris*))))
+         (setf *debris* (delete d *debris*))
+         (setf *score* 0)))
+
+  ;; player vs enemy ship
+  (loop for d in *enemy-ships* do
+       (when (aabb-overlap (+ 8 (player-ship-x *player-ship*)) (+ 8 (player-ship-y *player-ship*))
+                           7 7
+                           (+ 8 (enemy-ship-x d)) (+ 8 (enemy-ship-y d))
+                           7 7)
+         (setf *score* 0)))
+
   ;; fire vs enemy ship
   (loop for s in *enemy-ships* do
        (loop for f in *player-fire* do
@@ -154,8 +174,17 @@
                                 3 3
                                 (+ 8 (enemy-ship-x s)) (+ 8 (enemy-ship-y s))
                                 7 7)
+              (fiendish-rl.ffi:play-sound *destroy-sound*)
               (setf *enemy-ships* (delete s *enemy-ships*))
-              (setf *player-fire* (delete f *player-fire*))))))
+              (setf *player-fire* (delete f *player-fire*))
+              (incf *score* (let ((age (how-old-is-ship s)))
+                              (cond ((< age 1000) 25)
+                                    ((< age 2000) 15)
+                                    ((< age 3000) 10)
+                                    ((< age 5000) 5)
+                                    (t 1))))
+              (when (> *score* *max-score*)
+                (setf *max-score* *score*))))))
 
 (defun player-position-update ()
   (incf (player-ship-vel-x *player-ship*) (player-ship-accel-x *player-ship*))
@@ -246,6 +275,8 @@
         *font* (fiendish-rl.ffi:open-font "DroidSansMono.ttf" 12)
         *next-tick-ms* 0
         *running* t
+        *score* 0
+        *max-score* 0
         (player-ship-last-fired-time *player-ship*) 0
         *next-debris-check* 0
         *next-enemy-ship-check* 0)
@@ -282,5 +313,10 @@
 
 (defun run ()
   (unwind-protect (progn (fiendish-rl.ffi:init "fiendish" 1280 720 *screen-width* *screen-height*)
+                         (setf *fire-sound* (fiendish-rl.ffi:load-sound "fire.ogg")
+                               *destroy-sound* (fiendish-rl.ffi:load-sound "destroy.ogg"))
                          (gameloop))
     (fiendish-rl.ffi:destroy)))
+
+
+;; TODO no firing, just dodging, collecting coins

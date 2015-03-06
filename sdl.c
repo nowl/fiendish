@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
 #define SDL_FLAGS   (SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS)
@@ -23,7 +24,7 @@ static void sdldie(const char *msg)
 void sdl_init(char *program_name, int width, int height, int logic_width, int logic_height)
 {
     // init sdl
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0)
         sdldie("Unable to initialize SDL");
     
     Window = SDL_CreateWindow(program_name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_FLAGS);
@@ -45,9 +46,18 @@ void sdl_init(char *program_name, int width, int height, int logic_width, int lo
 
     if (TTF_Init() == -1)
         sdldie("problem initializing fonts");
+
+    int result = Mix_Init(MIX_INIT_OGG);
+    if((result & MIX_INIT_OGG) != MIX_INIT_OGG)
+        sdldie("problem initializing audio");    
+
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, AUDIO_S16LSB, 2, 512) < 0)
+        sdldie("problem opening audio");
 }
 
 void sdl_destroy(void) {
+    Mix_CloseAudio();
+    Mix_Quit();
     IMG_Quit();
     TTF_Quit();
 	SDL_DestroyWindow(Window);
@@ -151,4 +161,15 @@ void draw_text(TTF_Font *font,
 
     SDL_FreeSurface(image);
     SDL_DestroyTexture(texture);
+}
+
+Mix_Chunk *load_sound(char *file) {
+    Mix_Chunk *result = Mix_LoadWAV(file);
+    if(!result)
+        sdldie("problem loading sound");
+    return result;
+}
+
+void play_sound(Mix_Chunk *chunk) {
+    Mix_PlayChannel(-1, chunk, 0);
 }

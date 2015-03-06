@@ -61,6 +61,14 @@
   (b :unsigned-char)
   (a :unsigned-char))
 
+(defcfun ("load_sound" load-sound)
+    :pointer
+  (file :string))
+
+(defcfun ("play_sound" play-sound)
+    :void
+  (chunk :pointer))
+
 (defun init (&rest args)
   (use-foreign-library fiend)
   ;;(sdl-init "fiendish" 1280 720 320 200))

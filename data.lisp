@@ -88,6 +88,7 @@
   dx dy
   accx accy
   type
+  lifetime
   behavior)
 
 (defparameter *enemy-ships* nil)

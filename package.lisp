@@ -13,7 +13,9 @@
            draw-text
            blit
            pollevent
-           destroy))
+           destroy
+           play-sound
+           load-sound))
 
 (defpackage :fiendish-rl
   (:use :cl))
