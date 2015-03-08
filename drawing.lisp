@@ -48,7 +48,7 @@ then return those screen coordinates, otherwise nil"
   (when (< (fiendish-rl.ffi:getticks) 15000)
     (fiendish-rl.ffi:draw-text *font* "Welcome to Space Runner." 
                                0 10 0 50 240 255)
-    (fiendish-rl.ffi:draw-text *font* "W,A,S,D to move around. You'll figure out the rest." 
+    (fiendish-rl.ffi:draw-text *font* "W,A,S,D or arrow keys to move around. You'll figure out the rest." 
                                0 30 0 50 240 255)
     (fiendish-rl.ffi:draw-text *font* "Hint: dodge well. Good luck!" 
                                0 50 0 50 240 100))
@@ -64,11 +64,6 @@ then return those screen coordinates, otherwise nil"
                    (0 :enemy-ship1)
                    (1 :enemy-ship2))
                  (list sx sy)))))
-
-  (loop for f in *player-fire* do
-       (destructuring-bind (sx sy) (within-screen (player-fire-x f) (player-fire-y f))
-         (when sx
-           (blit :player-fire (list sx sy)))))
     
   (fiendish-rl.ffi:draw-text *font* (format nil "Score: ~d" *score*)
                              250 10 (if (= *score* 0) 255 20) 50 (if (= *score* 0) 0 240) 0)

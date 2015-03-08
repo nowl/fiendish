@@ -30,42 +30,14 @@
 
 (defun move-player (dir)
   (ecase dir
-    (:up (setf (player-ship-accel-y *player-ship*) (- (player-ship-thrust *player-ship*))))
-    (:down (setf (player-ship-accel-y *player-ship*) (player-ship-thrust *player-ship*)))
-    (:left (setf (player-ship-accel-x *player-ship*) (- (player-ship-thrust *player-ship*))))
-    (:right (setf (player-ship-accel-x *player-ship*) (player-ship-thrust *player-ship*)))))
-
-(defun player-fire (dir)
-  (symbol-macrolet ((last-fire (player-ship-last-fired-time *player-ship*)))
-    (let ((tick (fiendish-rl.ffi:getticks))
-          (dir (ecase dir
-                 (:up :ship-up)
-                 (:down :ship-down)
-                 (:left :ship-left)
-                 (:right :ship-right))))
-      (when (> tick (+ last-fire *player-fire-repeat-ms*))
-        (fiendish-rl.ffi:play-sound *fire-sound*)
-        (setf last-fire tick
-              (player-ship-dir *player-ship*) dir)
-        (push (make-player-fire :x (player-ship-x *player-ship*)
-                                :y (player-ship-y *player-ship*)
-                                :dir dir)
-              *player-fire*)))))
-
-(defun update-player-fire ()
-  (let (delete-list)
-    (loop for fire in *player-fire* do
-         (ecase (player-fire-dir fire)
-           (:ship-up (incf (player-fire-y fire) (- *player-fire-speed*)))
-           (:ship-down (incf (player-fire-y fire) *player-fire-speed*))
-           (:ship-left (incf (player-fire-x fire) (- *player-fire-speed*)))
-           (:ship-right (incf (player-fire-x fire) *player-fire-speed*)))
-         (destructuring-bind (sx sy) (within-screen (player-fire-x fire) (player-fire-y fire))
-           (declare (ignore sy))
-           (when (not sx)
-             (push fire delete-list))))
-    (loop for d in delete-list do
-         (setf *player-fire* (delete d *player-fire* :test #'eq)))))
+    (:up (setf (player-ship-accel-y *player-ship*) (- (player-ship-thrust *player-ship*))
+               (player-ship-dir *player-ship*) :ship-up))
+    (:down (setf (player-ship-accel-y *player-ship*) (player-ship-thrust *player-ship*)
+                 (player-ship-dir *player-ship*) :ship-down))
+    (:left (setf (player-ship-accel-x *player-ship*) (- (player-ship-thrust *player-ship*))
+                 (player-ship-dir *player-ship*) :ship-left))
+    (:right (setf (player-ship-accel-x *player-ship*) (player-ship-thrust *player-ship*)
+                  (player-ship-dir *player-ship*) :ship-right))))
 
 (defun update-enemy-ships ()
   (let (delete-list)
@@ -146,6 +118,19 @@
                                        (2 #'cutoff-player-y)))
           *enemy-ships*))))
 
+(defun maybe-make-coin (tick)
+  (when (> tick *next-coin-check*)
+    (incf *next-coin-check* *coin-check-ms*)
+    (let ((ix (player-ship-x *player-ship*))
+          (iy (player-ship-y *player-ship*))
+          (r *screen-width*)
+          (angle (random (* 2 pi))))
+      (push (make-coin :x (+ ix (* r (cos angle)))
+                       :y (+ iy (* r (sin angle)))
+                       :state :coin1
+                       :to-flip 30)
+            *coins*))))
+
 (defun how-old-is-ship (enemy-ship)
   (- (fiendish-rl.ffi:getticks) (enemy-ship-lifetime enemy-ship)))
 
@@ -157,7 +142,22 @@
                            (+ 8 (debris-x d)) (+ 8 (debris-y d))
                            7 7)
          (setf *debris* (delete d *debris*))
-         (setf *score* 0)))
+         (setf *score* 0)
+         (fiendish-rl.ffi:play-sound *destroy-sound*)))
+
+  ;; player vs coins
+  (loop for c in *coins* do
+       (when (aabb-overlap (+ 8 (player-ship-x *player-ship*)) (+ 8 (player-ship-y *player-ship*))
+                           7 7
+                           (+ 8 (coin-x c)) (+ 8 (coin-y c))
+                           7 7)
+         (setf *coins* (delete c *coins*))
+         (incf *score* 100)
+         (incf *score* (length *enemy-ships*))
+         (when (> *score* *max-score*)
+           (setf *max-score* *score*))
+         (fiendish-rl.ffi:play-sound *fire-sound*)
+         (setf *enemy-ships* nil)))
 
   ;; player vs enemy ship
   (loop for d in *enemy-ships* do
@@ -165,26 +165,8 @@
                            7 7
                            (+ 8 (enemy-ship-x d)) (+ 8 (enemy-ship-y d))
                            7 7)
-         (setf *score* 0)))
-
-  ;; fire vs enemy ship
-  (loop for s in *enemy-ships* do
-       (loop for f in *player-fire* do
-            (when (aabb-overlap (+ 8 (player-fire-x f)) (+ 8 (player-fire-y f))
-                                3 3
-                                (+ 8 (enemy-ship-x s)) (+ 8 (enemy-ship-y s))
-                                7 7)
-              (fiendish-rl.ffi:play-sound *destroy-sound*)
-              (setf *enemy-ships* (delete s *enemy-ships*))
-              (setf *player-fire* (delete f *player-fire*))
-              (incf *score* (let ((age (how-old-is-ship s)))
-                              (cond ((< age 1000) 25)
-                                    ((< age 2000) 15)
-                                    ((< age 3000) 10)
-                                    ((< age 5000) 5)
-                                    (t 1))))
-              (when (> *score* *max-score*)
-                (setf *max-score* *score*))))))
+         (setf *score* 0)
+         (fiendish-rl.ffi:play-sound *destroy-sound*))))
 
 (defun player-position-update ()
   (incf (player-ship-vel-x *player-ship*) (player-ship-accel-x *player-ship*))
@@ -249,9 +231,9 @@
          (setf (coin-to-flip c) 30)
          (setf (coin-state c) (next-coin-state c))))
 
-  (update-player-fire)
   (update-enemy-ships)
   (maybe-make-debris tick)
+  (maybe-make-coin tick)
   (maybe-make-enemy-ship tick)
   (test-collisions))
        
@@ -264,10 +246,10 @@
     ((= key (char-code #\a)) (move-player :left))
     ((= key (char-code #\w)) (move-player :up))
     ((= key (char-code #\s)) (move-player :down))
-    ((= key 1073741906) (player-fire :up))
-    ((= key 1073741903) (player-fire :right))
-    ((= key 1073741905) (player-fire :down))
-    ((= key 1073741904) (player-fire :left))))
+    ((= key 1073741906) (move-player :up))
+    ((= key 1073741903) (move-player :right))
+    ((= key 1073741905) (move-player :down))
+    ((= key 1073741904) (move-player :left))))
 
 (defun gameloop ()
   (setf *startup-time-ms* (fiendish-rl.ffi:getticks)
@@ -277,7 +259,6 @@
         *running* t
         *score* 0
         *max-score* 0
-        (player-ship-last-fired-time *player-ship*) 0
         *next-debris-check* 0
         *next-enemy-ship-check* 0)
   (clrhash *keyboard-state*)
@@ -313,10 +294,7 @@
 
 (defun run ()
   (unwind-protect (progn (fiendish-rl.ffi:init "fiendish" 1280 720 *screen-width* *screen-height*)
-                         (setf *fire-sound* (fiendish-rl.ffi:load-sound "fire.ogg")
-                               *destroy-sound* (fiendish-rl.ffi:load-sound "destroy.ogg"))
+                         (setf *destroy-sound* (fiendish-rl.ffi:load-sound "destroy.ogg")
+                               *fire-sound* (fiendish-rl.ffi:load-sound "fire.ogg"))
                          (gameloop))
     (fiendish-rl.ffi:destroy)))
-
-
-;; TODO no firing, just dodging, collecting coins

@@ -11,10 +11,9 @@
   vel-y
   accel-x
   accel-y
-  thrust
-  last-fired-time)
+  thrust)
 
-(defparameter *player-ship* (make-player-ship :x 0 :y 0 :dir :ship-up :thrust 1.5 :vel-x 0 :vel-y 0 :accel-x 0 :accel-y 0 :last-fired-time 0))
+(defparameter *player-ship* (make-player-ship :x 0 :y 0 :dir :ship-up :thrust 1.5 :vel-x 0 :vel-y 0 :accel-x 0 :accel-y 0))
 
 #|
 (defun ship-orientation ()
@@ -36,7 +35,6 @@
     (:coin1 '(16 0))
     (:coin2 '(32 0))
     (:coin3 '(48 0))
-    (:player-fire '(64 0))
     (:enemy-ship1 '(0 0))
     (:enemy-ship2 '(0 32))
     (:star '(16 32))))
@@ -54,13 +52,6 @@
 
 (defparameter *coins* nil)
 
-(loop with span = 5000 for i below 1000 do
-     (push (make-coin :x (- (random span) (/ span 2))
-                      :y (- (random span) (/ span 2))
-                      :state (nth (random 3) '(:coin1 :coin2 :coin3))
-                      :to-flip (random 30))
-           *coins*))
-
 (defun next-coin-state (coin)
   (ecase (coin-state coin)
     (:coin1 :coin2)
@@ -75,14 +66,6 @@
     (:coin3 :coin3)
     (:coin4 :coin2)))
 
-(defstruct player-fire
-  x y
-  dir)
-
-(defparameter *player-fire* nil)
-(defparameter *player-fire-speed* 15)
-(defparameter *player-fire-repeat-ms* 200)
-
 (defstruct enemy-ship
   x y
   dx dy
@@ -93,11 +76,14 @@
 
 (defparameter *enemy-ships* nil)
 (defparameter *next-enemy-ship-check* 0)
-(defparameter *enemy-ship-check-ms* 500)
+(defparameter *enemy-ship-check-ms* 200)
 
 
 (defparameter *next-debris-check* 0)
-(defparameter *debris-check-ms* 100)
+(defparameter *debris-check-ms* 75)
+
+(defparameter *next-coin-check* 0)
+(defparameter *coin-check-ms* 1500)
 
 (defstruct star
   x y
