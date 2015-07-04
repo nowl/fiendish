@@ -1,3 +1,5 @@
+local _M = {}
+
 -- move in reverse order and fill in the distance to next break for
 -- each character
 local function fill_breaks(tokens, lag)
@@ -45,7 +47,7 @@ local function compile_commands(tokens, str)
    end
 end
 
-function is_whitespace(char)
+function _M.is_whitespace(char)
    if char == ' ' or char == '\n' or char == '\t' then
       return true
    else
@@ -54,7 +56,7 @@ function is_whitespace(char)
 end
 
 -- compile text string into text commands
-function compile_text(s)
+function _M.compile_text(s)
    local command = {
       string = s,
       tokens = {}
@@ -74,7 +76,7 @@ function compile_text(s)
             table.insert(command.tokens, token)
             
             local this_char = string.sub(s, i, i)
-            if is_whitespace(this_char) then
+            if _M.is_whitespace(this_char) then
                fill_breaks(command.tokens, 1)
             end
          else
@@ -104,3 +106,5 @@ function compile_text(s)
 
    return command
 end
+
+return _M

@@ -1,6 +1,6 @@
 #include "fiendish.h"
 
-#define TICKS_PER_SEC     60
+#define TICKS_PER_SEC     15
 #define MS_PER_TICK       (1000.0 / TICKS_PER_SEC)
 #define MAX_DRAW_SKIPS    5
 
@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     uint16_t keymod;
 
     int next_tick = sdl_getticks();
+    int game_start_tick = next_tick;
     
     while(GameRunning) {
         int result;
@@ -42,9 +43,15 @@ int main(int argc, char *argv[]) {
         frames++;        
     }
 
+	int game_end_tick = sdl_getticks();
+	
     lua_destroy();
     sdl_destroy();
     
     printf("frames = %d\n", frames);
     printf("ticks = %d\n", ticks);
+    printf("total average frames/sec = %.3f\n",
+		   (double)frames/(game_end_tick - game_start_tick)*1000);
+    printf("total average ticks/sec = %.3f\n",
+		   (double)ticks/(game_end_tick - game_start_tick)*1000);
 }

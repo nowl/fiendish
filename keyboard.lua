@@ -69,7 +69,7 @@ Keyboard = {
          print ()
       end
       ]]--
-      require 'pl.pretty'.dump(self.keys)
+      --require 'pl.pretty'.dump(self.keys)
       
    end,                       
 }

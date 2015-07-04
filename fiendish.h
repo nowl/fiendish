@@ -16,8 +16,8 @@
 #define PROGRAM_NAME "Mordell Engine"
 
 // this is the number of cells across and down the screen
-#define CELLS_HORIZ    120
-#define CELLS_VERT     38
+#define CELLS_HORIZ    100
+#define CELLS_VERT     (CELLS_HORIZ * 9 / 16)//38
 
 // this is the logical size of the screen
 #define WIDTH   (CELLS_HORIZ*9)

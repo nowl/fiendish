@@ -1,14 +1,15 @@
 dofile 'keyboard.lua'
 dofile 'handle_event.lua'
-dofile 'draw.lua'
-dofile 'text.lua'
+local draw = require 'draw'
+local text = require 'text'
 
-local result = compile_text('Testing {[chsv 120 .75 .8]}hello{[creset]} resetting color. Let\'s see if we can get this to go over a single line!')
+local result = text.compile_text('Testing {[chsv 120 .75 .8]}hello{[creset]} resetting color. Let\'s see if we can get this to go over a single line!!!!')
 
 function update()
    --print 'update'
    --require 'pl.pretty'.dump(result)
-   putstring(result, 10, 10, 40, 15)
+   draw.putstring(result, 10, 20, 40, 15)
+   draw.hex_chart()
 end
 
 core.register_event_handler(handle_event)

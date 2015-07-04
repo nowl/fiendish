@@ -1,3 +1,5 @@
+local draw = require 'draw'
+
 -- simple event handler that just sets up the keyboard state
 
 function handle_event(etype, keycode, keymod)
@@ -16,12 +18,14 @@ function handle_event(etype, keycode, keymod)
    end
 
    if etype == core.SDL_KEYDOWN and keycode == core.SDLK_k and bit.band(keymod, core.KMOD_CTRL) ~= 0 then
-      Keyboard:print()
+      --Keyboard:print()
 
-      print (Keyboard:get_new_unhandled())
-      pretty.dump(Keyboard:get_pressed())
+      --print (Keyboard:get_new_unhandled())
+      --pretty.dump(Keyboard:get_pressed())
 
-      putchar(0, 0, '@', 0, core.rand_double(), 1.0, 0, 0, 0)
+      --putchar(0, 0, '@', 0, core.rand_double(), 1.0, 0, 0, 0)
+
+      draw.hex_chart()
    end
 end
 
